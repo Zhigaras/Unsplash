@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name" translatable="false">Unsplash</string>
+    <string name="onboarding_text_1">Take pictures, post, build an audience, get feedback!</string>
+    <string name="onboarding_text_2">Share with friends, collect collections</string>
+    <string name="onboarding_text_3">Upload your favorite shots and track statistics</string>
+    <string name="log_in_text">Log in with Unsplash</string>
+</resources>

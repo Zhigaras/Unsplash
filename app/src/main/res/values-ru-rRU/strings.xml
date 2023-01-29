@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Unsplash</string>
+    <string name="onboarding_text_1">Создавайте снимки, публикуйте, собирайте аудиторию, получайте фидбек!</string>
+    <string name="onboarding_text_2">Делитесь с друзьями, собирайте коллекции</string>
+    <string name="onboarding_text_3">Загружайте любимые снимки и отслеживайте статистику</string>
+    <string name="log_in_text">Войти через Unsplash</string>
+</resources>
