@@ -1,4 +1,4 @@
-package com.zhigaras.unsplash.screens
+package com.zhigaras.unsplash.presentation.compose.screens
 
 import android.content.res.Resources
 import androidx.compose.animation.*
@@ -15,17 +15,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zhigaras.unsplash.R
-import com.zhigaras.unsplash.compose.theme.Black
-import com.zhigaras.unsplash.compose.theme.PrimaryColor
-import com.zhigaras.unsplash.compose.theme.White
+import com.zhigaras.unsplash.presentation.compose.theme.Black
+import com.zhigaras.unsplash.presentation.compose.theme.PrimaryColor
+import com.zhigaras.unsplash.presentation.compose.theme.White
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun OnboardingScreen() {
+fun OnboardingScreen(toAuthorizeScreen: () -> Unit) {
     var onboardingPage by rememberSaveable { (mutableStateOf(1)) }
     var onboardingText = ""
     var circleXOffset = 0.0f
@@ -83,7 +82,7 @@ fun OnboardingScreen() {
             )
         }
     } else {
-        AuthScreen()
+        AuthScreen(toAuthorizeScreen)
     }
     Row {
         if (onboardingPage == 2 || onboardingPage == 3) {
@@ -112,7 +111,7 @@ fun OnboardingScreen() {
 }
 
 @Composable
-fun AuthScreen() {
+fun AuthScreen(toAuthorizeScreen: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -153,7 +152,7 @@ fun AuthScreen() {
                 verticalArrangement = Arrangement.Center
             ) {
                 Button(
-                    onClick = { },
+                    onClick = { toAuthorizeScreen() },
                     shape = Shapes().small,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -212,8 +211,8 @@ fun Circle(xOffset: Float) {
 //    AuthScreen()
 //}
 
-@Preview(showSystemUi = true)
-@Composable
-fun AuthPreview() {
-    AuthScreen()
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun AuthPreview() {
+//    AuthScreen()
+//}

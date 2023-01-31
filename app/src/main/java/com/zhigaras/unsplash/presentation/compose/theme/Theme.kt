@@ -1,4 +1,4 @@
-package com.zhigaras.unsplash.compose.theme
+package com.zhigaras.unsplash.presentation.compose.theme
 
 import android.app.Activity
 import android.os.Build

@@ -4,4 +4,6 @@
     <string name="onboarding_text_2">Share with friends, collect collections</string>
     <string name="onboarding_text_3">Upload your favorite shots and track statistics</string>
     <string name="log_in_text">Log in with Unsplash</string>
+    <string name="auth_cancel">Authorization was cancel</string>
+    <string name="authentication_failed">Autentification failed</string>
 </resources>

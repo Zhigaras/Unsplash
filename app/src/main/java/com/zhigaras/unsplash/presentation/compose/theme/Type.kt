@@ -1,4 +1,4 @@
-package com.zhigaras.unsplash.compose.theme
+package com.zhigaras.unsplash.presentation.compose.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
