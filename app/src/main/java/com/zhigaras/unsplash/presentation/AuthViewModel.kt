@@ -39,7 +39,7 @@ class AuthViewModel @Inject constructor(
     private val _toastEventChannel = Channel<Int>()
     val toastEventChannel get() = _toastEventChannel.receiveAsFlow()
     
-    fun openLoginPage(openAuthPage: (Intent) -> Unit) {
+    fun prepareAuthPageIntent(openAuthPage: (Intent) -> Unit) {
         val customTabsIntent = CustomTabsIntent.Builder().build()
         val authRequest = AppAuth.getAuthorizationRequest()
         

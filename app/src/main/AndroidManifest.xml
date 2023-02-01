@@ -23,22 +23,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="com.zhigaras.unsplash.HANDLE_AUTHORIZATION_RESPONSE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="com.zhigaras.unsplash"/> <!-- Redirect URI scheme -->
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="net.openid.appauth.RedirectUriReceiverActivity"
-            tools:node="replace"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="com.zhigaras.unsplash"/> <!-- Redirect URI scheme -->
-            </intent-filter>
         </activity>
     </application>
 </manifest>

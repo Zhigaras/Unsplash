@@ -50,9 +50,9 @@ object AppAuth {
         const val AUTH_URI = "https://unsplash.com/oauth/authorize"
         const val TOKEN_URI = "https://unsplash.com/oauth/token"
         const val RESPONSE_TYPE = ResponseTypeValues.CODE
-        const val SCOPES = "public"
+        const val SCOPES = "public read_user write_user read_photos write_photos write_likes write_followers read_collections write_collections"
         const val CLIENT_ID = "VNZuauGLQhmjIs8ZCJJW26m5B3wYoUqYin6iZJdZ30s"
         const val CLIENT_SECRET = "9eXr-6tXL_AncnIiIr4Mnce_xQ1A74zlg6xTmPofTH0"
-        const val REDIRECT_URL = "urn:ietf:wg:oauth:2.0:oob"
+        const val REDIRECT_URL = "com.zhigaras.unsplash://unsplash"
     }
 }
