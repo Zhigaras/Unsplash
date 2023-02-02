@@ -7,4 +7,5 @@
     <string name="log_in_text">Войти через Unsplash</string>
     <string name="auth_cancel">Авторизация была прервана</string>
     <string name="authentication_failed">Аутентификаця не выполнена</string>
+    <string name="try_again">Попробуйте снова</string>
 </resources>

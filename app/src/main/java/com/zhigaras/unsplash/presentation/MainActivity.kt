@@ -15,8 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.zhigaras.unsplash.presentation.compose.theme.UnsplashTheme
+import com.zhigaras.unsplash.presentation.compose.screens.DetailsScreen
 import com.zhigaras.unsplash.presentation.compose.screens.OnboardingScreen
+import com.zhigaras.unsplash.presentation.compose.theme.UnsplashTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -53,7 +54,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    UnsplashApp { openAuthPage() }
+                    DetailsScreen()
+//                    UnsplashApp { openAuthPage() }
                 }
             }
         }

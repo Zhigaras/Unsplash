@@ -29,12 +29,9 @@ object AppAuth {
             authService.performTokenRequest(tokenRequest, getClientAuthentication()) { response, ex ->
                 when {
                     response != null -> {
-                        //получение токена произошло успешно
                         val token = response.accessToken.orEmpty()
-                        
                         continuation.resumeWith(Result.success(token))
                     }
-                    //получение токенов произошло неуспешно, показываем ошибку
                     ex != null -> { continuation.resumeWith(Result.failure(ex)) }
                     else -> error("unreachable")
                 }
@@ -46,7 +43,7 @@ object AppAuth {
         return ClientSecretPost(AuthConfig.CLIENT_SECRET)
     }
     
-    private object AuthConfig {
+    object AuthConfig {
         const val AUTH_URI = "https://unsplash.com/oauth/authorize"
         const val TOKEN_URI = "https://unsplash.com/oauth/token"
         const val RESPONSE_TYPE = ResponseTypeValues.CODE
