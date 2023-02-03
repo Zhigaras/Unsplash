@@ -1,7 +1,7 @@
 package com.zhigaras.unsplash.data.remote
 
-import com.zhigaras.unsplash.model.photo.PhotoModel
 import com.zhigaras.unsplash.model.photodetails.PhotoDetails
+import com.zhigaras.unsplash.model.photoitem.PhotoItem
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -9,7 +9,7 @@ class RemoteRepository @Inject constructor(
     private val unsplashApi: UnsplashApi
 ) {
     
-    suspend fun loadPhotos(page: Int): Response<List<PhotoModel>> {
+    suspend fun loadPhotos(page: Int): Response<List<PhotoItem>> {
         return unsplashApi.loadPhotos(page)
     }
     

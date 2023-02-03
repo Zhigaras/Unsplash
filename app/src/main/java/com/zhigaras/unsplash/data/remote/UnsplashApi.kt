@@ -1,7 +1,7 @@
 package com.zhigaras.unsplash.data.remote
 
 import com.zhigaras.unsplash.domain.AppAuth
-import com.zhigaras.unsplash.model.photo.PhotoModel
+import com.zhigaras.unsplash.model.photoitem.PhotoItem
 import com.zhigaras.unsplash.model.photodetails.PhotoDetails
 import retrofit2.Response
 import retrofit2.http.GET
@@ -18,7 +18,7 @@ interface UnsplashApi {
     @GET("photos")
     suspend fun loadPhotos(
         @Query("page") page: Int
-    ): Response<List<PhotoModel>>
+    ): Response<List<PhotoItem>>
     
     @Headers("Authorization: Client-ID ${AppAuth.AuthConfig.CLIENT_ID}")
     @GET("photos/{id}")

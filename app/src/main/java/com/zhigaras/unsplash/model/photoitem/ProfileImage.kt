@@ -1,11 +1,11 @@
-package com.zhigaras.unsplash.model.photo
+package com.zhigaras.unsplash.model.photoitem
 
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class ProfileImageX(
+data class ProfileImage(
     @Json(name = "large")
     val large: String,
     @Json(name = "medium")

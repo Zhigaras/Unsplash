@@ -1,8 +1,14 @@
 package com.zhigaras.unsplash.data
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.zhigaras.unsplash.data.locale.LocaleRepository
+import com.zhigaras.unsplash.data.locale.db.PhotoEntity
+import com.zhigaras.unsplash.data.paging.PhotosPagingSource
 import com.zhigaras.unsplash.data.remote.RemoteRepository
 import com.zhigaras.unsplash.model.photodetails.PhotoDetails
+import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -19,8 +25,11 @@ class MainRepository @Inject constructor(
         return remoteRepository.getPhotoDetails(photoId)
     }
     
-//    suspend fun loadPhotos(): Response<List<PhotoModel>> {
-//        return remoteRepository.loadPhotos()
-//    }
+     fun loadPhotos(): Flow<PagingData<PhotoEntity>> {
+        return Pager(
+            config = PagingConfig(PhotosPagingSource.PAGE_SIZE),
+            pagingSourceFactory = { PhotosPagingSource(remoteRepository) }
+        ).flow
+    }
     
 }

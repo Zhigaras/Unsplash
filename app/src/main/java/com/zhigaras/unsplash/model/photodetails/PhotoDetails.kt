@@ -2,9 +2,9 @@ package com.zhigaras.unsplash.model.photodetails
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import com.zhigaras.unsplash.model.photo.Links
-import com.zhigaras.unsplash.model.photo.Urls
-import com.zhigaras.unsplash.model.photo.User
+import com.zhigaras.unsplash.model.photoitem.Links
+import com.zhigaras.unsplash.model.photoitem.Urls
+import com.zhigaras.unsplash.model.photoitem.User
 
 @JsonClass(generateAdapter = true)
 data class PhotoDetails(

@@ -7,4 +7,7 @@
     <string name="auth_cancel">Authorization was cancel</string>
     <string name="authentication_failed">Authentication failed</string>
     <string name="try_again">Try again</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="check_connection">Please check your network connection</string>
+    <string name="not_found_404">The requested resource doesn’t exist.</string>
 </resources>

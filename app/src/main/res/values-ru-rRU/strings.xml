@@ -8,4 +8,7 @@
     <string name="auth_cancel">Авторизация была прервана</string>
     <string name="authentication_failed">Аутентификаця не выполнена</string>
     <string name="try_again">Попробуйте снова</string>
+    <string name="something_went_wrong">Что-то пошло не так</string>
+    <string name="check_connection">Нет сети. Обновите страницу.</string>
+    <string name="not_found_404">Запрошенный ресурс не существует.</string>
 </resources>
