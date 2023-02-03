@@ -17,7 +17,8 @@ interface UnsplashApi {
     @Headers("Authorization: Client-ID ${AppAuth.AuthConfig.CLIENT_ID}")
     @GET("photos")
     suspend fun loadPhotos(
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("per_page")perPage: Int
     ): Response<List<PhotoItem>>
     
     @Headers("Authorization: Client-ID ${AppAuth.AuthConfig.CLIENT_ID}")

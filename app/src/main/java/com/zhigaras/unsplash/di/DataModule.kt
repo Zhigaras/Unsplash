@@ -9,6 +9,7 @@ import androidx.room.Room
 import com.zhigaras.unsplash.data.locale.DataStoreManager
 import com.zhigaras.unsplash.data.locale.db.CachedPhotoDao
 import com.zhigaras.unsplash.data.locale.db.CachedPhotoDatabase
+import com.zhigaras.unsplash.data.locale.db.RemoteKeysDao
 import com.zhigaras.unsplash.data.remote.UnsplashApi
 import dagger.Module
 import dagger.Provides
@@ -60,5 +61,11 @@ class DataModule {
     @Singleton
     fun providesCachedPhotoDao(db: CachedPhotoDatabase): CachedPhotoDao {
         return db.getPhotoDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun providesRemoteKeysDao(db: CachedPhotoDatabase): RemoteKeysDao {
+        return db.getRemoteKeysDao()
     }
 }
