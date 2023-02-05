@@ -10,6 +10,8 @@ data class PhotoEntity(
     @PrimaryKey
     val id: String,
     val likedByUser: Boolean,
+    val width: Int,
+    val height: Int,
     val likes: Int,
     val downloadLink:String,
     val selfLink: String,

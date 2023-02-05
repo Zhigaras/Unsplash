@@ -24,7 +24,11 @@ data class PhotoItem(
     @Json(name = "urls")
     val urls: Urls,
     @Json(name = "user")
-    val user: User
+    val user: User,
+    @Json(name = "width")
+    val width: Int,
+    @Json(name = "height")
+    val height: Int
 ) {
     
     fun toPhotoEntity(): PhotoEntity {
@@ -40,7 +44,9 @@ data class PhotoItem(
             urlRaw = urls.raw,
             userUsername = user.username,
             userInstagramUsername = user.instagramUsername,
-            userProfileImage = user.profileImage.small
+            userProfileImage = user.profileImage.small,
+            width = width,
+            height = height
         )
     }
     

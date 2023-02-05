@@ -43,8 +43,12 @@ class UnsplashRemoteMediator @Inject constructor(
         try {
             val photos = unsplashApi.loadPhotos(page, PAGE_SIZE)
                 .body()?.map { it.toPhotoEntity() }
-            
-            val endOfPaginationReached = photos!!.isEmpty()
+            try {
+                checkNotNull(photos)
+            } catch (exception: java.lang.IllegalStateException) {
+                return MediatorResult.Error(exception)
+            }
+            val endOfPaginationReached = photos.isEmpty()
             cachedPhotoDatabase.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     remoteKeysDao.clearRemoteKeys()
