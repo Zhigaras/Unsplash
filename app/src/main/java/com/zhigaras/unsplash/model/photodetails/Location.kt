@@ -10,7 +10,9 @@ data class Location(
     @Json(name = "city")
     val city: String?,
     @Json(name = "country")
-    val country:String?
+    val country:String?,
+    @Json(name = "position")
+    val position: Position
 )
 
 @JsonClass(generateAdapter = true)

@@ -10,4 +10,5 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="check_connection">Please check your network connection</string>
     <string name="not_found_404">The requested resource doesn’t exist.</string>
+    <string name="user_profile_image">User profile image</string>
 </resources>

@@ -11,12 +11,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.zhigaras.unsplash.presentation.compose.screens.mainscreen.MainScreen
-import com.zhigaras.unsplash.presentation.compose.screens.OnboardingScreen
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.zhigaras.unsplash.presentation.compose.navigation.SetupNavHost
 import com.zhigaras.unsplash.presentation.compose.theme.UnsplashTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -54,8 +59,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
-//                    UnsplashApp { openAuthPage() }
+                    UnsplashApp {
+                    
+                    }
                 }
             }
         }
@@ -64,13 +70,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun UnsplashApp(toAuthorizeScreen: () -> Unit) {
-    OnboardingScreen(toAuthorizeScreen)
-}
+    var bottomBarState by rememberSaveable { (mutableStateOf(true)) }
+    val navController = rememberNavController()
+    val currentBackStack by navController.currentBackStackEntryAsState()
 
-//@Preview(showSystemUi = true)
-//@Composable
-//fun DefaultPreview() {
-//    UnsplashTheme {
-//        OnboardingScreen()
-//    }
-//}
+    SetupNavHost(navController = navController)
+}

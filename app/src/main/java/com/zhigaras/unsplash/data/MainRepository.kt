@@ -10,10 +10,13 @@ import com.zhigaras.unsplash.data.locale.db.CachedPhotoDatabase
 import com.zhigaras.unsplash.data.locale.db.PhotoEntity
 import com.zhigaras.unsplash.data.locale.db.RemoteKeysDao
 import com.zhigaras.unsplash.data.paging.UnsplashRemoteMediator
+import com.zhigaras.unsplash.data.remote.ApiResult
+import com.zhigaras.unsplash.data.remote.BaseRemoteRepo
 import com.zhigaras.unsplash.data.remote.UnsplashApi
+import com.zhigaras.unsplash.di.IoDispatcher
 import com.zhigaras.unsplash.model.photodetails.PhotoDetails
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import retrofit2.Response
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(
@@ -21,15 +24,16 @@ class MainRepository @Inject constructor(
     private val cachedPhotoDatabase: CachedPhotoDatabase,
     private val cachedPhotoDao: CachedPhotoDao,
     private val unsplashApi: UnsplashApi,
-    private val remoteKeysDao: RemoteKeysDao
-) {
+    private val remoteKeysDao: RemoteKeysDao,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+): BaseRemoteRepo(ioDispatcher = ioDispatcher) {
     
     suspend fun saveAccessToken(token: String) {
         dataStoreManager.saveToken(token)
     }
     
-    suspend fun getPhotoDetails(photoId: String): Response<PhotoDetails> {
-        return unsplashApi.getPhotoDetails(photoId)
+    suspend fun getPhotoDetails(photoId: String): ApiResult<PhotoDetails> {
+        return safeApiCall { unsplashApi.getPhotoDetails(photoId) }
     }
     
     @OptIn(ExperimentalPagingApi::class)

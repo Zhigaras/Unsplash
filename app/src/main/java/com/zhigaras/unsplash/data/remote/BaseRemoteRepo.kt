@@ -2,8 +2,7 @@ package com.zhigaras.unsplash.data.remote
 
 import android.content.res.Resources
 import com.zhigaras.unsplash.R
-import com.zhigaras.unsplash.data.locale.db.PhotoEntity
-import com.zhigaras.unsplash.model.photoitem.PhotoItem
+import com.zhigaras.unsplash.model.photodetails.PhotoDetails
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -14,13 +13,13 @@ abstract class BaseRemoteRepo (
     private val ioDispatcher: CoroutineDispatcher
 ) {
     
-    suspend fun safeApiCall(apiToBeCalled: suspend () -> Response<List<PhotoItem>>): ApiResult<List<PhotoEntity>> {
+    suspend fun safeApiCall(apiToBeCalled: suspend () -> Response<PhotoDetails>): ApiResult<PhotoDetails> {
         return withContext(ioDispatcher) {
             try {
-                val response: Response<List<PhotoItem>> = apiToBeCalled()
+                val response = apiToBeCalled()
                 
                 if (response.isSuccessful) {
-                    ApiResult.Success(_data = response.body()?.map { it.toPhotoEntity() })
+                    ApiResult.Success(_data = response.body())
                 } else {
                     if (response.code() == 404) {
                         ApiResult.Error(

@@ -42,9 +42,9 @@ data class PhotoItem(
             selfLink = links.self,
             urlRegular = urls.regular,
             urlRaw = urls.raw,
-            userUsername = user.username,
+            userUsername = user.name,
             userInstagramUsername = user.instagramUsername,
-            userProfileImage = user.profileImage.small,
+            userProfileImage = user.profileImage.medium,
             width = width,
             height = height
         )

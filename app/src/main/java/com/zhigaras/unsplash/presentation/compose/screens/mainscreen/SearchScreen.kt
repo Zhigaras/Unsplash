@@ -23,8 +23,10 @@ import com.zhigaras.unsplash.presentation.compose.LoadingView
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel()
+fun SearchScreen(
+    viewModel: MainViewModel = hiltViewModel(),
+    onPhotoClick: (String) -> Unit,
+    onLikeClick: () -> Unit
 ) {
     val state = rememberLazyStaggeredGridState(initialFirstVisibleItemIndex = 0)
     val pagedPhotos = viewModel.pagedPhotos.collectAsLazyPagingItems()
@@ -43,7 +45,11 @@ fun MainScreen(
         
         items(pagedPhotos) { photoEntity ->
             photoEntity?.let {
-                PhotoItemCard(photoItem = it, itemWidth)
+                PhotoItemCard(
+                    photoItem = it, itemWidth,
+                    onLikeClick = onLikeClick,
+                    onPhotoClick = onPhotoClick
+                )
             }
         }
         pagedPhotos.apply {
@@ -75,15 +81,6 @@ fun MainScreen(
                 }
             }
         }
-
-//        itemsIndexed(pagedPhotos) { index, photos ->
-//            Text(text = photos?.id.toString())
-//
-//        }
     }
-//        TextButton(onClick = { viewModel.loadPhotos() }) {
-//            Text(text = "get photos")
-//        }
-
 }
 

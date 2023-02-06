@@ -1,48 +1,119 @@
 package com.zhigaras.unsplash.presentation.compose.screens.mainscreen
 
 import android.util.Log
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Card
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import androidx.core.net.toUri
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.data.locale.db.PhotoEntity
-import kotlinx.coroutines.NonDisposableHandle.parent
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun PhotoItemCard(
     photoItem: PhotoEntity,
-    itemWidth: Dp
+    itemWidth: Dp,
+    childModifier: Modifier = Modifier,
+    onPhotoClick: (String) -> Unit,
+    onLikeClick: () -> Unit
 ) {
     val imageHeight = photoItem.height * itemWidth / photoItem.width
     Log.d("AAA", "width - $itemWidth, height - $imageHeight")
-    GlideImage(
-        model = photoItem.urlRegular,
-        contentDescription = null,
-        modifier = Modifier.size(
-            width = itemWidth,
-            height = imageHeight
-        )
-    )
-
-//        Text(text = photoItem.id, modifier = Modifier.fillMaxSize())
-
     
+    Box(
+        modifier = Modifier
+            .size(
+                width = itemWidth,
+                height = imageHeight
+            ).clickable { onPhotoClick(photoItem.id) }
+    ) {
+        GlideImage(
+            model = photoItem.urlRegular.toUri(),
+            contentDescription = null,
+            modifier = childModifier
+        )
+        PhotoBottomInfo(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .height(40.dp),
+            userProfileImage = photoItem.userProfileImage,
+            userName = photoItem.userUsername,
+            userInstagramName = photoItem.userInstagramUsername,
+            likes = photoItem.likes,
+            isLiked = photoItem.likedByUser,
+            onLikeClick = onLikeClick
+        )
+    }
 }
 
-//@Preview(showSystemUi = true)
-//@Composable
-//fun PhotoItemPreview() {
-//    PhotoItemCard(photoItem = TestPhotoModel.testPhotoModel)
-//
-//}
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun PhotoBottomInfo(
+    modifier: Modifier,
+    userProfileImage: String,
+    userName: String?,
+    userInstagramName: String?,
+    likes: Int,
+    isLiked: Boolean,
+    onLikeClick: () -> Unit = {}
+) {
+    val likeImg = if (isLiked) R.drawable.is_liked_icon else R.drawable.is_not_liked_2
+    
+    Row(
+        modifier = modifier
+            .padding(4.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        GlideImage(
+            model = userProfileImage.toUri(),
+            contentDescription = stringResource(R.string.user_profile_image),
+            modifier = Modifier.padding(end = 4.dp)
+        ) {
+            it.circleCrop()
+            
+        }
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.SpaceEvenly) {
+            Text(
+                text = userName.toString(),
+                maxLines = 1,
+                style = MaterialTheme.typography.labelMedium,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (userInstagramName != null && userInstagramName != "") {
+                val userInstagram = if (userInstagramName.contains('/'))
+                    userInstagramName.split('/').last { it != "" }
+                else userInstagramName
+                Text(
+                    text = "@$userInstagram",
+                    maxLines = 1,
+                    style = MaterialTheme.typography.labelSmall,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+        val likesCounter = if (likes < 1_000) likes.toString()
+        else "${likes / 1_000}K"
+        Text(text = likesCounter)
+        Image(
+            painter = painterResource(id = likeImg),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(4.dp)
+                .clickable { onLikeClick() }
+        )
+    }
+}
