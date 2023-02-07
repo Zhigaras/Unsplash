@@ -51,4 +51,5 @@ object Details: Destinations {
     )
 }
 
+val allScreensList = listOf(Onboarding, Feed, Favorites, Profile, Details)
 val bottomTabList = listOf(Feed, Favorites, Profile)

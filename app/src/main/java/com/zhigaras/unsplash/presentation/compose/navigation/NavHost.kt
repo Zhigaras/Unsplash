@@ -18,6 +18,7 @@ fun SetupNavHost(
     modifier: Modifier = Modifier
 ) {
     NavHost(
+        modifier = modifier,
         navController = navController,
         startDestination = Feed.route
     ) {

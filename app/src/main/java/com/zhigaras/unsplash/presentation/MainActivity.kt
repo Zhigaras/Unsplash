@@ -78,12 +78,12 @@ fun UnsplashApp(toAuthorizeScreen: () -> Unit) {
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
     val currentScreen =
-        bottomTabList.find { it.route == currentDestination?.route } ?: Feed
+        allScreensList.find { currentDestination?.route?.contains(it.route) == true } ?: Feed
     
     Scaffold(
         topBar = {
             UnsplashTopBar(currentScreen = currentScreen, onBackClick = {
-               navController.popBackStack()
+                navController.popBackStack()
             })
         },
         bottomBar = {
@@ -96,7 +96,10 @@ fun UnsplashApp(toAuthorizeScreen: () -> Unit) {
             )
         }
     ) { innerPaddings ->
-        SetupNavHost(navController = navController, modifier = Modifier.padding(innerPaddings))
+        SetupNavHost(
+            navController = navController,
+            modifier = Modifier.padding(innerPaddings)
+        )
     }
     
     

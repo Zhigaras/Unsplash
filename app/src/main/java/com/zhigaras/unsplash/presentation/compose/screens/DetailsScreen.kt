@@ -81,11 +81,11 @@ fun DetailsSet(
 ) {
     Column(
         modifier = modifier
-            .padding(8.dp)
+            .padding(horizontal = 8.dp)
             .verticalScroll(state = ScrollState(0))
     ) {
         if (photoDetails != null) {
-            PhotoBlock(modifier.padding(bottom = 8.dp), photoDetails)
+            PhotoBlock(modifier.padding(vertical = 8.dp), photoDetails)
             LocationBlock(modifier.padding(horizontal = 4.dp), photoDetails, onLocationClick = onLocationClick)
             TagsBlock(modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp), photoDetails)
             AboutBlock(modifier, photoDetails)

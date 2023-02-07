@@ -26,4 +26,8 @@ interface UnsplashApi {
     suspend fun getPhotoDetails(
         @Path("id") photoId: String
     ): Response<PhotoDetails>
+    
+    
+    
+    
 }
