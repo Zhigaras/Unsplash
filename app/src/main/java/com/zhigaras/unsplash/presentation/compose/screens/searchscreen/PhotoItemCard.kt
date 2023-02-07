@@ -1,4 +1,4 @@
-package com.zhigaras.unsplash.presentation.compose.screens.mainscreen
+package com.zhigaras.unsplash.presentation.compose.screens.searchscreen
 
 import android.util.Log
 import androidx.compose.foundation.Image

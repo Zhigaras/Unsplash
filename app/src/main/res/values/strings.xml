@@ -11,4 +11,17 @@
     <string name="check_connection">Please check your network connection</string>
     <string name="not_found_404">The requested resource doesn’t exist.</string>
     <string name="user_profile_image">User profile image</string>
+    <string name="made_with">"Made with: "</string>
+    <string name="model">"Model: "</string>
+    <string name="exposure">"Exposure: "</string>
+    <string name="aperture">"Aperture: "</string>
+    <string name="focal_length">"Focal length: "</string>
+    <string name="iso">"ISO: "</string>
+    <string name="download">Download</string>
+    <string name="about">"About "</string>
+    <string name="no_internet_connection">No internet connection. Refresh the page.</string>
+    <string name="feed">Feed</string>
+    <string name="favorites">Favorites</string>
+    <string name="profile">Profile</string>
+    <string name="photo">Photo</string>
 </resources>

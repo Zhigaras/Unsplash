@@ -12,4 +12,17 @@
     <string name="check_connection">Нет сети. Обновите страницу.</string>
     <string name="not_found_404">Запрошенный ресурс не существует.</string>
     <string name="user_profile_image">Аватар автора</string>
+    <string name="made_with">"Снято на: "</string>
+    <string name="model">"Модель: "</string>
+    <string name="exposure">"Экспозиция: "</string>
+    <string name="aperture">"Диафрагма: "</string>
+    <string name="focal_length">"Фокусное расстояние: "</string>
+    <string name="iso">"ИСО: "</string>
+    <string name="download">Скачать</string>
+    <string name="about">"О "</string>
+    <string name="no_internet_connection">Нет сети. Обновите страницу</string>
+    <string name="feed">Лента</string>
+    <string name="favorites">Избранное</string>
+    <string name="profile">Профиль</string>
+    <string name="photo">Фото</string>
 </resources>

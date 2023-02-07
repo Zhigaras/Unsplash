@@ -18,5 +18,5 @@ data class Exif(
     @Json(name = "focal_length")
     val focalLength: String?,
     @Json(name = "iso")
-    val isp: String?
+    val iso: String?
 )

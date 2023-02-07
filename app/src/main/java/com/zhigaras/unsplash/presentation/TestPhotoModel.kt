@@ -1,4 +1,4 @@
-package com.zhigaras.unsplash.presentation.compose.screens.mainscreen
+package com.zhigaras.unsplash.presentation
 
 import com.zhigaras.unsplash.data.locale.db.PhotoEntity
 

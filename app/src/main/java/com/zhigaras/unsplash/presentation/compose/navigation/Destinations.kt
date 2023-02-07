@@ -1,45 +1,47 @@
 package com.zhigaras.unsplash.presentation.compose.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.zhigaras.unsplash.R
 
 interface Destinations {
+    val title: Int?
     val route: String
-    val icon: ImageVector?
+    val icon: Int?
     val pageNumber: Int
 }
 
 object Onboarding: Destinations {
-    override val route = "Onboarding"
+    override val title = null
+    override val route: String = this::class.java.simpleName
     override val icon = null
     override val pageNumber = 0
 }
 
-object Search: Destinations {
-    override val route = "Search"
-    override val icon = Icons.Outlined.Home
+object Feed: Destinations {
+    override val title = R.string.feed
+    override val route: String = this::class.java.simpleName
+    override val icon = R.drawable.home_icon
     override val pageNumber = 1
 }
 
 object Favorites: Destinations {
-    override val route = "Favorites"
-    override val icon = Icons.Outlined.Favorite
+    override val title = R.string.favorites
+    override val route: String = this::class.java.simpleName
+    override val icon = R.drawable.favorites_icon
     override val pageNumber = 2
 }
 
 object Profile: Destinations {
-    override val route = "Profile"
-    override val icon = Icons.Outlined.Person
+    override val title = R.string.profile
+    override val route: String = this::class.java.simpleName
+    override val icon = R.drawable.profile_icon
     override val pageNumber = 3
 }
 
 object Details: Destinations {
-    override val route = "Details"
+    override val title = R.string.photo
+    override val route: String = this::class.java.simpleName
     override val icon = null
     override val pageNumber = 4
     const val photoIdArg = "photo_id"
@@ -49,4 +51,4 @@ object Details: Destinations {
     )
 }
 
-val bottomTabList = listOf(Search, Favorites, Profile)
+val bottomTabList = listOf(Feed, Favorites, Profile)

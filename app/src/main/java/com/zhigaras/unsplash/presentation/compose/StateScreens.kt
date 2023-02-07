@@ -30,7 +30,8 @@ fun LoadingView(
 @Composable
 fun LoadingItem() {
     CircularProgressIndicator(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(16.dp)
             .wrapContentWidth(Alignment.CenterHorizontally)
     )
@@ -58,4 +59,15 @@ fun ErrorItem(
             Text(text = stringResource(R.string.try_again))
         }
     }
+}
+
+@Composable
+fun ErrorView(
+    message: String
+) {
+    Text(
+        text = message,
+        modifier = Modifier,
+        style = MaterialTheme.typography.labelMedium
+    )
 }

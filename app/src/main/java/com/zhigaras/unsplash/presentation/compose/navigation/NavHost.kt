@@ -1,23 +1,27 @@
 package com.zhigaras.unsplash.presentation.compose.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.zhigaras.unsplash.presentation.compose.screens.DetailsScreen
+import com.zhigaras.unsplash.presentation.compose.screens.FavoritesScreen
 import com.zhigaras.unsplash.presentation.compose.screens.OnboardingScreen
-import com.zhigaras.unsplash.presentation.compose.screens.mainscreen.SearchScreen
+import com.zhigaras.unsplash.presentation.compose.screens.ProfileScreen
+import com.zhigaras.unsplash.presentation.compose.screens.searchscreen.SearchScreen
 
 @Composable
 fun SetupNavHost(
-    navController: NavHostController
+    navController: NavHostController,
+    modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
-        startDestination = Search.route
+        startDestination = Feed.route
     ) {
-        composable(route = Search.route) {
+        composable(route = Feed.route) {
             SearchScreen(
                 onPhotoClick = { photoId ->
                     navController.navigateSingleTopTo("${Details.route}/$photoId")
@@ -34,6 +38,12 @@ fun SetupNavHost(
             OnboardingScreen {
                 TODO()
             }
+        }
+        composable(route = Favorites.route) {
+            FavoritesScreen()
+        }
+        composable(route = Profile.route) {
+            ProfileScreen()
         }
     }
 }
