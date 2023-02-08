@@ -2,7 +2,6 @@ package com.zhigaras.unsplash.presentation
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -36,7 +35,6 @@ class MainActivity : ComponentActivity() {
     private val authorizeLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val intentData = it.data ?: return@registerForActivityResult
-            Log.d("AAA", it.data?.scheme.toString())
             authViewModel.handleAuthResponseIntent(intentData)
         }
     
@@ -101,6 +99,4 @@ fun UnsplashApp(toAuthorizeScreen: () -> Unit) {
             modifier = Modifier.padding(innerPaddings)
         )
     }
-    
-    
 }

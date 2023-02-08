@@ -1,6 +1,7 @@
 package com.zhigaras.unsplash.presentation.compose
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -11,18 +12,26 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.presentation.compose.navigation.Destinations
 import com.zhigaras.unsplash.presentation.compose.navigation.Details
 import com.zhigaras.unsplash.presentation.compose.navigation.Feed
+import com.zhigaras.unsplash.presentation.compose.navigation.Profile
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class,
+)
 @Composable
 fun UnsplashTopBar(
-    currentScreen: Destinations, onBackClick: () -> Unit
+    currentScreen: Destinations,
+    onBackClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
+    onSearchButtonClick: (String) -> Unit = {}
 ) {
     var isBackButtonVisible by remember { mutableStateOf(false) }
     isBackButtonVisible = currentScreen == Details
@@ -32,28 +41,49 @@ fun UnsplashTopBar(
     TopAppBar(title = {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+                .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            if (isSearchActive) {
-                SearchElement(
-                    modifier = Modifier.weight(1f),
-                    textInputState
-                )
-            } else {
-                TitleElement(
-                    modifier = Modifier.weight(1f),
-                    currentScreen = currentScreen,
-                )
+            AnimatedContent(
+                targetState = isSearchActive,
+                transitionSpec = {
+                    slideInVertically { -it } with slideOutVertically { it }
+                },
+                modifier = Modifier.weight(1f).animateContentSize()
+            ) {
+                if (isSearchActive) {
+                    SearchElement(
+                        modifier = Modifier.weight(1f),
+                        textInputState = textInputState,
+                        onSearchButtonClick = onSearchButtonClick
+                    )
+                } else {
+                    TitleElement(
+                        modifier = Modifier.weight(1f),
+                        currentScreen = currentScreen,
+                    )
+                }
             }
-            IconToggleButton(
-                modifier = Modifier.padding(8.dp),
-                checked = isSearchActive,
-                onCheckedChange = { isSearchActive = !isSearchActive }) {
+            if (currentScreen == Feed) {
+                IconToggleButton(
+                    modifier = Modifier.padding(8.dp),
+                    checked = isSearchActive,
+                    onCheckedChange = { isSearchActive = !isSearchActive }) {
+                    Icon(
+                        imageVector = if (isSearchActive) Icons.Outlined.Close
+                        else Icons.Outlined.Search,
+                        contentDescription = null
+                    )
+                }
+            }
+            if (currentScreen == Profile) {
                 Icon(
-                    imageVector = if (isSearchActive) Icons.Outlined.Close
-                    else Icons.Outlined.Search, contentDescription = null
-                )
+                    painterResource(id = R.drawable.logout_icon),
+                    null,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(end = 16.dp)
+                        .clickable { onLogoutClick() })
             }
         }
     }, navigationIcon = {
@@ -71,7 +101,8 @@ fun UnsplashTopBar(
 @Composable
 fun SearchElement(
     modifier: Modifier,
-    textInputState: MutableState<TextFieldValue>
+    textInputState: MutableState<TextFieldValue>,
+    onSearchButtonClick: (String) -> Unit
 ) {
     TextField(
         modifier = modifier,
@@ -79,7 +110,7 @@ fun SearchElement(
         onValueChange = { textInputState.value = it },
         trailingIcon = {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { onSearchButtonClick(textInputState.value.text) },
                 enabled = textInputState.value != TextFieldValue("")
             ) {
                 Icon(imageVector = Icons.Outlined.ArrowForward, null)
@@ -104,7 +135,7 @@ fun TitleElement(
 @Preview
 @Composable
 fun TopBarPreview() {
-    UnsplashTopBar(currentScreen = Feed) {
+    UnsplashTopBar(currentScreen = Profile) {
     
     }
 }

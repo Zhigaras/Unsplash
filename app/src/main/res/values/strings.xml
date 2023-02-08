@@ -9,7 +9,7 @@
     <string name="try_again">Try again</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="check_connection">Please check your network connection</string>
-    <string name="not_found_404">The requested resource doesn’t exist.</string>
+    <string name="not_found_404">The requested resource does not exist.</string>
     <string name="user_profile_image">User profile image</string>
     <string name="made_with">"Made with: "</string>
     <string name="model">"Model: "</string>

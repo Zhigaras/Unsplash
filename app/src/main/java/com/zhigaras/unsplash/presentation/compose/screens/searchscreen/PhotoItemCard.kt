@@ -1,6 +1,5 @@
 package com.zhigaras.unsplash.presentation.compose.screens.searchscreen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,7 +30,6 @@ fun PhotoItemCard(
     onLikeClick: () -> Unit
 ) {
     val imageHeight = photoItem.height * itemWidth / photoItem.width
-    Log.d("AAA", "width - $itemWidth, height - $imageHeight")
     
     Box(
         modifier = Modifier

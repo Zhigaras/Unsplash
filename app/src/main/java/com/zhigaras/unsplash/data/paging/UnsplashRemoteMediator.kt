@@ -41,7 +41,7 @@ class UnsplashRemoteMediator @Inject constructor(
         }
         
         try {
-            val photos = unsplashApi.loadPhotos(page, PAGE_SIZE)
+            val photos = unsplashApi.loadFeedPhotos(page, PAGE_SIZE)
                 .body()?.map { it.toPhotoEntity() }
             try {
                 checkNotNull(photos)

@@ -6,11 +6,12 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import com.zhigaras.unsplash.presentation.compose.screens.DetailsScreen
 import com.zhigaras.unsplash.presentation.compose.screens.FavoritesScreen
 import com.zhigaras.unsplash.presentation.compose.screens.OnboardingScreen
 import com.zhigaras.unsplash.presentation.compose.screens.ProfileScreen
-import com.zhigaras.unsplash.presentation.compose.screens.searchscreen.SearchScreen
+import com.zhigaras.unsplash.presentation.compose.screens.searchscreen.FeedScreen
 
 @Composable
 fun SetupNavHost(
@@ -23,7 +24,7 @@ fun SetupNavHost(
         startDestination = Feed.route
     ) {
         composable(route = Feed.route) {
-            SearchScreen(
+            FeedScreen(
                 onPhotoClick = { photoId ->
                     navController.navigateSingleTopTo("${Details.route}/$photoId")
                 },
@@ -31,7 +32,11 @@ fun SetupNavHost(
             )
         }
         
-        composable(route = Details.routeWithArgs, arguments = Details.arguments) { navBackStackEntry ->
+        composable(
+            route = Details.routeWithArgs,
+            arguments = Details.arguments,
+            deepLinks = listOf(navDeepLink { uriPattern = "https://unsplash.com/photos/{photo_id}" })
+        ) { navBackStackEntry ->
             val photoId = navBackStackEntry.arguments?.getString(Details.photoIdArg) ?: ""
             DetailsScreen(photoId = photoId)
         }

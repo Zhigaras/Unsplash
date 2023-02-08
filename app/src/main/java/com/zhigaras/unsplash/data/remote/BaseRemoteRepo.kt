@@ -33,14 +33,13 @@ abstract class BaseRemoteRepo (
                 }
             } catch (e: HttpException) {
                 ApiResult.Error(
-                    exception = e.message ?: Resources.getSystem()
-                        .getString(R.string.something_went_wrong)
+                    exception = e.message ?: "Resources.getSystem().getString(R.string.something_went_wrong)"
                 )
             } catch (e: IOException) {
-                ApiResult.Error(Resources.getSystem().getString(R.string.check_connection))
+                ApiResult.Error("Resources.getSystem().getString(R.string.check_connection)")
             } catch (e: Exception) {
-                ApiResult.Error(exception = Resources.getSystem()
-                    .getString(R.string.something_went_wrong))
+                ApiResult.Error(exception = "Resources.getSystem()" +
+                    ".getString(R.string.something_went_wrong)")
             }
         }
     }

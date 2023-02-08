@@ -23,7 +23,7 @@ import com.zhigaras.unsplash.presentation.compose.LoadingView
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SearchScreen(
+fun FeedScreen(
     viewModel: MainViewModel = hiltViewModel(),
     onPhotoClick: (String) -> Unit,
     onLikeClick: () -> Unit
