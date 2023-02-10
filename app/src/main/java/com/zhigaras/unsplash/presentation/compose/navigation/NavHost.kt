@@ -2,11 +2,11 @@ package com.zhigaras.unsplash.presentation.compose.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
+import com.zhigaras.unsplash.domain.navigateSingleTopTo
 import com.zhigaras.unsplash.presentation.compose.screens.DetailsScreen
 import com.zhigaras.unsplash.presentation.compose.screens.FavoritesScreen
 import com.zhigaras.unsplash.presentation.compose.screens.OnboardingScreen
@@ -16,7 +16,8 @@ import com.zhigaras.unsplash.presentation.compose.screens.searchscreen.FeedScree
 @Composable
 fun SetupNavHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDownloadClick: (String, String) -> Unit
 ) {
     NavHost(
         modifier = modifier,
@@ -35,10 +36,15 @@ fun SetupNavHost(
         composable(
             route = Details.routeWithArgs,
             arguments = Details.arguments,
-            deepLinks = listOf(navDeepLink { uriPattern = "https://unsplash.com/photos/{photo_id}" })
+            deepLinks = listOf(navDeepLink {
+                uriPattern = "https://unsplash.com/photos/{photo_id}"
+            })
         ) { navBackStackEntry ->
             val photoId = navBackStackEntry.arguments?.getString(Details.photoIdArg) ?: ""
-            DetailsScreen(photoId = photoId)
+            DetailsScreen(
+                photoId = photoId,
+                onDownloadClick = onDownloadClick
+            )
         }
         composable(route = Onboarding.route) {
             OnboardingScreen {
@@ -54,13 +60,3 @@ fun SetupNavHost(
     }
 }
 
-fun NavHostController.navigateSingleTopTo(route: String) =
-    this.navigate(route) {
-        popUpTo(
-            this@navigateSingleTopTo.graph.findStartDestination().id
-        ) {
-            saveState = true
-        }
-        launchSingleTop = true
-        restoreState = true
-    }

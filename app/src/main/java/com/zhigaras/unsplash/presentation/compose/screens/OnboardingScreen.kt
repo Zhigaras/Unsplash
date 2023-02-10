@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.presentation.compose.theme.Black
-import com.zhigaras.unsplash.presentation.compose.theme.PrimaryColor
+import com.zhigaras.unsplash.presentation.compose.theme.Lime
 import com.zhigaras.unsplash.presentation.compose.theme.White
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -198,7 +198,7 @@ fun Circle(xOffset: Float) {
         modifier = Modifier
     ) {
         drawCircle(
-            color = PrimaryColor,
+            color = Lime,
             radius = 1000f,
             center = Offset(xOffset, 100f)
         )

@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import javax.inject.Inject
 
 class DataStoreManager @Inject constructor(
@@ -16,7 +15,7 @@ class DataStoreManager @Inject constructor(
     
     suspend fun saveToken(token: String) {
         dataStore.edit { prefs ->
-            prefs[stringPreferencesKey(token)] = token
+            prefs[booleanPreferencesKey(token)] = true
         }
     }
     

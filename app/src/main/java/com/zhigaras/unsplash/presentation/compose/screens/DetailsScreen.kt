@@ -6,7 +6,6 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.StringRes
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -34,8 +33,11 @@ import com.google.accompanist.placeholder.placeholder
 import com.google.accompanist.placeholder.shimmer
 import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.data.remote.ApiStatus.*
+import com.zhigaras.unsplash.domain.ExifText
+import com.zhigaras.unsplash.domain.hasSearchTags
+import com.zhigaras.unsplash.domain.toHashTagString
+import com.zhigaras.unsplash.domain.toShortForm
 import com.zhigaras.unsplash.model.photodetails.PhotoDetails
-import com.zhigaras.unsplash.model.photodetails.Tag
 import com.zhigaras.unsplash.presentation.MainViewModel
 import com.zhigaras.unsplash.presentation.compose.ErrorView
 import com.zhigaras.unsplash.presentation.compose.screens.searchscreen.PhotoBottomInfo
@@ -43,7 +45,8 @@ import com.zhigaras.unsplash.presentation.compose.screens.searchscreen.PhotoBott
 @Composable
 fun DetailsScreen(
     photoId: String,
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
+    onDownloadClick: (String, String) -> Unit
 ) {
     LaunchedEffect(key1 = Unit) {
         viewModel.getPhotoDetail(photoId)
@@ -66,7 +69,8 @@ fun DetailsScreen(
                     color = Color.Gray,
                     highlight = PlaceholderHighlight.shimmer(highlightColor = Color.White)
                 ),
-                photoDetails = photoDetails.data
+                photoDetails = photoDetails.data,
+                onDownloadClick = { _, _ -> }
             )
         }
         SUCCESS -> {
@@ -74,7 +78,7 @@ fun DetailsScreen(
                 photoDetails = photoDetails.data,
                 modifier = Modifier.fillMaxWidth(),
                 onLocationClick = {
-                    checkLocationLauncher.launch(
+                    context.startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
                             Uri.parse(it)
@@ -86,11 +90,12 @@ fun DetailsScreen(
                     intent.putExtra(Intent.EXTRA_TEXT, it)
                     intent.type = "text/plain"
                     try {
-                        linkShareLauncher.launch(intent)
+                        context.startActivity(intent)
                     } catch (e: ActivityNotFoundException) {
                         Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                     }
-                }
+                },
+                onDownloadClick = onDownloadClick
             )
         }
         ERROR -> ErrorView(message = photoDetails.errorInfo?.message ?: "")
@@ -102,7 +107,8 @@ fun DetailsSet(
     modifier: Modifier = Modifier,
     photoDetails: PhotoDetails?,
     onLocationClick: (String) -> Unit = {},
-    onShareClick: (String) -> Unit = {}
+    onShareClick: (String) -> Unit = {},
+    onDownloadClick: (String, String) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -114,11 +120,15 @@ fun DetailsSet(
             LocationBlock(
                 modifier.padding(horizontal = 4.dp),
                 photoDetails,
-                onLocationClick = onLocationClick
+                onLocationClick = { onLocationClick(it) }
             )
             TagsBlock(modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp), photoDetails)
             AboutBlock(modifier, photoDetails)
-            DownloadBlock(modifier)
+            DownloadBlock(
+                modifier = modifier,
+                onDownloadClick = onDownloadClick,
+                photoDetails = photoDetails
+            )
         }
     }
 }
@@ -208,11 +218,14 @@ fun AboutBlock(
         }
         Column(modifier.weight(1f)) {
             photoDetails.user.bio?.let {
-                Text(text = buildString {
-                    append(stringResource(R.string.about))
-                    append(photoDetails.user.name)
-                    append(":")
-                }, style = MaterialTheme.typography.titleSmall)
+                Text(
+                    text = buildString {
+                        append(stringResource(R.string.about))
+                        append(photoDetails.user.name)
+                        append(":")
+                    },
+                    style = MaterialTheme.typography.titleSmall
+                )
                 Text(text = it, style = MaterialTheme.typography.bodyMedium)
             }
         }
@@ -220,47 +233,35 @@ fun AboutBlock(
 }
 
 @Composable
-fun DownloadBlock(modifier: Modifier) {
+fun DownloadBlock(
+    modifier: Modifier,
+    onDownloadClick: (String, String) -> Unit,
+    photoDetails: PhotoDetails
+) {
     Row(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .clickable {
+                onDownloadClick(photoDetails.urls.regular, photoDetails.id)
+            }
     ) {
         Text(
             text = stringResource(R.string.download),
             textDecoration = TextDecoration.Underline
         )
+        Text(text = buildString {
+            append(" (")
+            append(photoDetails.downloads.toShortForm())
+            append(")")
+        })
         Image(
             painter = painterResource(id = R.drawable.download_icon),
             contentDescription = null
         )
     }
-}
-
-@Composable
-fun String?.ExifText(@StringRes fieldName: Int) {
-    this?.let {
-        Text(text = buildString {
-            append(stringResource(id = fieldName))
-            append(it)
-        }, style = MaterialTheme.typography.bodyMedium)
-    }
-}
-
-fun List<Tag>.hasSearchTags(): Boolean {
-    return this.any { it.type == "search" }
-}
-
-fun List<Tag>.toHashTagString(): String {
-    val tags = this.filter { it.type == "search" }
-    return buildString {
-        tags.forEach {
-            append(" #")
-            append(it.title)
-        }
-    }.trim()
 }
 
 //@Preview

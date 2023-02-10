@@ -19,6 +19,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.data.locale.db.PhotoEntity
+import com.zhigaras.unsplash.domain.toShortForm
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -103,9 +104,7 @@ fun PhotoBottomInfo(
                 )
             }
         }
-        val likesCounter = if (likes < 1_000) likes.toString()
-        else "${likes / 1_000}K"
-        Text(text = likesCounter)
+        Text(text = likes.toShortForm())
         Image(
             painter = painterResource(id = likeImg),
             contentDescription = null,
