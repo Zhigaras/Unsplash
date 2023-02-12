@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
@@ -35,6 +36,8 @@ fun FeedScreen(
     val screenWidth =
         (Resources.getSystem().displayMetrics.widthPixels / Resources.getSystem().displayMetrics.density).dp
     val itemWidth = (screenWidth - (cellsCount - 1) * itemsPadding) / cellsCount
+    val likeChangingState = viewModel.likeChangingFlow.collectAsState()
+    
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(cellsCount),
         horizontalArrangement = Arrangement.spacedBy(itemsPadding),
@@ -46,8 +49,9 @@ fun FeedScreen(
             photoEntity?.let {
                 PhotoItemCard(
                     photoItem = it, itemWidth,
-                    onLikeClick = {},
-                    onPhotoClick = onPhotoClick
+                    onLikeClick = {  },
+                    onPhotoClick = onPhotoClick,
+                    likeChangingState = likeChangingState
                 )
             }
         }
@@ -82,4 +86,3 @@ fun FeedScreen(
         }
     }
 }
-

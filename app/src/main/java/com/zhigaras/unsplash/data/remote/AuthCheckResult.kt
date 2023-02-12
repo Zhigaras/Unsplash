@@ -1,4 +1,4 @@
-package com.zhigaras.unsplash.model
+package com.zhigaras.unsplash.data.remote
 
 enum class AuthCheckStatus{
     LOADING,

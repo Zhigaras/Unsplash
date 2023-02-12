@@ -1,13 +1,13 @@
 package com.zhigaras.unsplash.data.remote
 
 import android.content.res.Resources
-import androidx.annotation.StringRes
 import com.zhigaras.unsplash.R
 
 enum class ApiStatus {
     SUCCESS,
     ERROR,
-    LOADING
+    LOADING,
+    NOT_LOADED_YET
 }
 
 sealed class ApiResult<out T>(
@@ -38,6 +38,11 @@ sealed class ApiResult<out T>(
     
     class Loading<out R> : ApiResult<R>(
         status = ApiStatus.LOADING,
+        data = null,
+        errorInfo = null
+    )
+    class NotLoadedYet<out R> : ApiResult<R>(
+        status = ApiStatus.NOT_LOADED_YET,
         data = null,
         errorInfo = null
     )

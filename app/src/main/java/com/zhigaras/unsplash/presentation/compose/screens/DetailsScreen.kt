@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.placeholder
 import com.google.accompanist.placeholder.shimmer
 import com.zhigaras.unsplash.R
+import com.zhigaras.unsplash.data.remote.ApiResult
 import com.zhigaras.unsplash.data.remote.ApiStatus.*
 import com.zhigaras.unsplash.domain.ExifText
 import com.zhigaras.unsplash.domain.hasSearchTags
@@ -50,11 +52,11 @@ fun DetailsScreen(
         viewModel.getPhotoDetail(photoId)
     }
     val photoDetails = viewModel.photoDetailsFlow.collectAsState().value
-    
+    val likeChangingState = viewModel.likeChangingFlow.collectAsState()
     val context = LocalContext.current
     
     when (photoDetails.status) {
-        LOADING -> {
+        LOADING, NOT_LOADED_YET -> {
             DetailsSet(
                 modifier = Modifier.placeholder(
                     visible = true,
@@ -62,7 +64,8 @@ fun DetailsScreen(
                     highlight = PlaceholderHighlight.shimmer(highlightColor = Color.White)
                 ),
                 photoDetails = photoDetails.data,
-                onDownloadClick = { _, _ -> }
+                onDownloadClick = { _, _ -> },
+                likeChangingState = likeChangingState
             )
         }
         SUCCESS -> {
@@ -87,7 +90,8 @@ fun DetailsScreen(
                         Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                     }
                 },
-                onDownloadClick = onDownloadClick
+                onDownloadClick = onDownloadClick,
+                likeChangingState = likeChangingState
             )
         }
         ERROR -> ErrorView(message = photoDetails.errorInfo?.message ?: "")
@@ -100,7 +104,8 @@ fun DetailsSet(
     photoDetails: PhotoDetails?,
     onLocationClick: (String) -> Unit = {},
     onShareClick: (String) -> Unit = {},
-    onDownloadClick: (String, String) -> Unit
+    onDownloadClick: (String, String) -> Unit,
+    likeChangingState: State<ApiResult<PhotoDetails>>
 ) {
     Column(
         modifier = modifier
@@ -108,7 +113,12 @@ fun DetailsSet(
             .verticalScroll(state = ScrollState(0))
     ) {
         if (photoDetails != null) {
-            PhotoBlock(modifier.padding(vertical = 8.dp), photoDetails, onShareClick = onShareClick)
+            PhotoBlock(
+                modifier.padding(vertical = 8.dp),
+                photoDetails,
+                onShareClick = onShareClick,
+                likeChangingState = likeChangingState
+            )
             LocationBlock(
                 modifier.padding(horizontal = 4.dp),
                 photoDetails,
@@ -130,7 +140,8 @@ fun DetailsSet(
 fun PhotoBlock(
     modifier: Modifier,
     photoDetails: PhotoDetails,
-    onShareClick: (String) -> Unit
+    onShareClick: (String) -> Unit,
+    likeChangingState: State<ApiResult<PhotoDetails>>
 ) {
     Box(modifier) {
         GlideImage(model = photoDetails.urls.regular, contentDescription = null)
@@ -149,7 +160,8 @@ fun PhotoBlock(
             userName = photoDetails.user.name,
             userInstagramName = photoDetails.user.instagramUsername,
             likes = photoDetails.likes,
-            _isLiked = photoDetails.likedByUser
+            _isLiked = photoDetails.likedByUser,
+            likeChangingState = likeChangingState
         )
     }
 }

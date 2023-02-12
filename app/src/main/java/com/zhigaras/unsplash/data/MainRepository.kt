@@ -14,7 +14,7 @@ import com.zhigaras.unsplash.data.remote.ApiResult
 import com.zhigaras.unsplash.data.remote.BaseRemoteRepo
 import com.zhigaras.unsplash.data.remote.UnsplashApi
 import com.zhigaras.unsplash.di.IoDispatcher
-import com.zhigaras.unsplash.model.AuthCheckResult
+import com.zhigaras.unsplash.data.remote.AuthCheckResult
 import com.zhigaras.unsplash.model.photodetails.PhotoDetails
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -48,6 +48,14 @@ class MainRepository @Inject constructor(
     
     suspend fun getPhotoDetails(photoId: String): ApiResult<PhotoDetails> {
         return safeApiCall { unsplashApi.getPhotoDetails(photoId) }
+    }
+    
+    suspend fun addToFavorites(photoId: String): ApiResult<PhotoDetails> {
+        return safeApiCall { unsplashApi.addToFavorites(photoId) }
+    }
+    
+    suspend fun removeFromFavorites(photoId: String): ApiResult<PhotoDetails> {
+        return safeApiCall { unsplashApi.removeFromFavorite(photoId) }
     }
     
     @OptIn(ExperimentalPagingApi::class)

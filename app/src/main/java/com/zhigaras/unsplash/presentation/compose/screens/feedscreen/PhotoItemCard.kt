@@ -20,7 +20,10 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.data.locale.db.PhotoEntity
+import com.zhigaras.unsplash.data.remote.ApiResult
+import com.zhigaras.unsplash.data.remote.ApiStatus.*
 import com.zhigaras.unsplash.domain.toShortForm
+import com.zhigaras.unsplash.model.photodetails.PhotoDetails
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -29,7 +32,8 @@ fun PhotoItemCard(
     itemWidth: Dp,
     childModifier: Modifier = Modifier,
     onPhotoClick: (String) -> Unit,
-    onLikeClick: () -> Unit
+    onLikeClick: () -> Unit,
+    likeChangingState: State<ApiResult<PhotoDetails>>
 ) {
     val imageHeight = photoItem.height * itemWidth / photoItem.width
     
@@ -55,7 +59,8 @@ fun PhotoItemCard(
             userInstagramName = photoItem.userInstagramUsername,
             likes = photoItem.likes,
             _isLiked = photoItem.likedByUser,
-            onLikeClick = onLikeClick
+            onLikeClick = onLikeClick,
+            likeChangingState = likeChangingState
         )
     }
 }
@@ -69,10 +74,9 @@ fun PhotoBottomInfo(
     userInstagramName: String?,
     likes: Int,
     _isLiked: Boolean,
-    onLikeClick: () -> Unit = {}
+    onLikeClick: () -> Unit = {},
+    likeChangingState: State<ApiResult<PhotoDetails>>
 ) {
-    var isLiked by remember { mutableStateOf(_isLiked) }
-    
     Row(
         modifier = modifier
             .padding(4.dp)
@@ -106,17 +110,60 @@ fun PhotoBottomInfo(
                 )
             }
         }
-        Text(text = likes.toShortForm())
-        IconToggleButton(checked = isLiked,
-            onCheckedChange = { isLiked = !isLiked },
-            modifier = Modifier
-                .padding(4.dp)
-                .clickable { onLikeClick() }
-        ) {
-            Icon(
-                painter = painterResource(id = if (isLiked) R.drawable.is_liked_icon else R.drawable.is_not_liked_2),
-                contentDescription = null
-            )
+        
+        when (likeChangingState.value.status) {
+            NOT_LOADED_YET -> {
+                LikesArea(
+                    likes = likes,
+                    _isLiked = _isLiked,
+                    enabled = true,
+                    onLikeClick = onLikeClick
+                )
+            }
+            ERROR -> { /*TODO*/}
+            LOADING -> {
+                LikesArea(
+                    likes = likes,
+                    _isLiked = _isLiked,
+                    onLikeClick = {},
+                    enabled = false
+                )
+            }
+            SUCCESS -> {
+                likeChangingState.value.data?.let {
+                    LikesArea(
+                        likes = it.likes,
+                        _isLiked = it.likedByUser,
+                        onLikeClick = onLikeClick,
+                        enabled = true
+                    )
+                }
+            }
         }
+    }
+}
+
+@Composable
+fun LikesArea(
+    likes: Int,
+    _isLiked: Boolean,
+    onLikeClick: () -> Unit,
+    enabled: Boolean
+) {
+    var isLiked by remember { mutableStateOf(_isLiked) }
+    
+    Text(text = likes.toShortForm())
+    IconToggleButton(
+        checked = isLiked,
+        onCheckedChange = { isLiked = !isLiked },
+        modifier = Modifier
+            .padding(4.dp)
+            .clickable { onLikeClick },
+        enabled = enabled
+    ) {
+        Icon(
+            painter = painterResource(id = if (isLiked) R.drawable.is_liked_icon else R.drawable.is_not_liked_2),
+            contentDescription = null
+        )
     }
 }

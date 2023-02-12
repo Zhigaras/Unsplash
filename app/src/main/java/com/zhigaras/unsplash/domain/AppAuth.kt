@@ -1,7 +1,6 @@
 package com.zhigaras.unsplash.domain
 
 import androidx.core.net.toUri
-import com.zhigaras.unsplash.model.TokenModel
 import net.openid.appauth.*
 import kotlin.coroutines.suspendCoroutine
 

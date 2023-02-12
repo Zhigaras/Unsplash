@@ -10,7 +10,7 @@ import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.data.MainRepository
 import com.zhigaras.unsplash.di.IoDispatcher
 import com.zhigaras.unsplash.domain.AppAuth
-import com.zhigaras.unsplash.model.AuthCheckResult
+import com.zhigaras.unsplash.data.remote.AuthCheckResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
