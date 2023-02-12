@@ -31,7 +31,7 @@ fun UnsplashTopBar(
     currentScreen: Destinations,
     onBackClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
-    onSearchButtonClick: (String) -> Unit = {}
+    onSearchButtonClick: (String) -> Unit = {},
 ) {
     var isBackButtonVisible by remember { mutableStateOf(false) }
     isBackButtonVisible = currentScreen == Details

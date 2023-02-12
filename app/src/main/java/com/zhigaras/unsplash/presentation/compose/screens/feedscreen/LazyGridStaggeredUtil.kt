@@ -1,4 +1,4 @@
-package com.zhigaras.unsplash.presentation.compose.screens.searchscreen
+package com.zhigaras.unsplash.presentation.compose.screens.feedscreen
 
 import android.annotation.SuppressLint
 import android.os.Parcel

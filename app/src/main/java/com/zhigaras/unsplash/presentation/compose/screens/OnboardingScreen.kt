@@ -152,7 +152,7 @@ fun AuthScreen(toAuthorizeScreen: () -> Unit) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Button(
-                    onClick = { toAuthorizeScreen() },
+                    onClick = toAuthorizeScreen,
                     shape = Shapes().small,
                     modifier = Modifier
                         .fillMaxWidth()

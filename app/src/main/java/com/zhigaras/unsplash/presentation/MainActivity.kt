@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,6 +40,7 @@ class MainActivity : ComponentActivity() {
     private val authorizeLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val intentData = it.data ?: return@registerForActivityResult
+            Log.d("AAA intentData", intentData.toString())
             authViewModel.handleAuthResponseIntent(intentData)
         }
     
@@ -128,7 +130,9 @@ class MainActivity : ComponentActivity() {
                         onDownloadClick = { url, photoId ->
                             downloadPhoto(url, photoId)
                         },
-                        snackBarHostState = snackBarHostState
+                        snackBarHostState = snackBarHostState,
+                        toAuthorizeScreen = { openAuthPage() },
+                        authViewModel = authViewModel
                     )
                 }
             }
@@ -139,22 +143,29 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UnsplashApp(
-    toAuthorizeScreen: () -> Unit = {},
+    toAuthorizeScreen: () -> Unit,
     onDownloadClick: (String, String) -> Unit,
-    snackBarHostState: SnackbarHostState
+    snackBarHostState: SnackbarHostState,
+    authViewModel: AuthViewModel
 ) {
-    
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
     val currentScreen =
         allScreensList.find { currentDestination?.route?.contains(it.route) == true } ?: Feed
     
+    fun logOut() {
+        authViewModel.logOut()
+        navController.navigate(Onboarding.route)
+    }
+    
     Scaffold(
         topBar = {
-            UnsplashTopBar(currentScreen = currentScreen, onBackClick = {
-                navController.popBackStack()
-            })
+            UnsplashTopBar(
+                currentScreen = currentScreen,
+                onBackClick = { navController.popBackStack() },
+                onLogoutClick = { logOut() }
+            )
         },
         bottomBar = {
             BottomTabRow(
@@ -172,7 +183,9 @@ fun UnsplashApp(
         SetupNavHost(
             navController = navController,
             modifier = Modifier.padding(innerPaddings),
-            onDownloadClick = onDownloadClick
+            onDownloadClick = onDownloadClick,
+            toAuthorizeScreen = toAuthorizeScreen,
+            authViewModel = authViewModel
         )
     }
 }

@@ -8,9 +8,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.data.MainRepository
+import com.zhigaras.unsplash.di.IoDispatcher
 import com.zhigaras.unsplash.domain.AppAuth
+import com.zhigaras.unsplash.model.AuthCheckResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     @ApplicationContext app: Context,
-    private val mainRepository: MainRepository
+    private val mainRepository: MainRepository,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     
     private val authService = AuthorizationService(app)
@@ -38,6 +42,9 @@ class AuthViewModel @Inject constructor(
     
     private val _toastEventChannel = Channel<Int>()
     val toastEventChannel get() = _toastEventChannel.receiveAsFlow()
+    
+    private val _authCheckFlow = MutableStateFlow<AuthCheckResult<Boolean>>(AuthCheckResult.Loading())
+    val authCheckFlow = _authCheckFlow.asStateFlow()
     
     fun prepareAuthPageIntent(openAuthPage: (Intent) -> Unit) {
         val customTabsIntent = CustomTabsIntent.Builder().build()
@@ -74,7 +81,7 @@ class AuthViewModel @Inject constructor(
         }.onSuccess {
             _ladingFlow.value = false
             mainRepository.saveAccessToken(it)
-            Log.d("AAA", it)
+            Log.d("AAA token", it)
             _authSuccessEventChannel.send(Unit)
         }.onFailure {
             _ladingFlow.value = false
@@ -85,5 +92,20 @@ class AuthViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         authService.dispose()
+    }
+    
+    fun checkAuthToken() {
+        viewModelScope.launch(ioDispatcher) {
+            _authCheckFlow.value = AuthCheckResult.Loading()
+            val result = mainRepository.checkAuthToken()
+            _authCheckFlow.value = result
+        }
+    }
+    
+    fun logOut() {
+        viewModelScope.launch(ioDispatcher) {
+            mainRepository.clearDataStore()
+            mainRepository.clearCachedPhotoDb()
+        }
     }
 }

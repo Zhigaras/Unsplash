@@ -1,5 +1,6 @@
 package com.zhigaras.unsplash.data
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -14,6 +15,7 @@ import com.zhigaras.unsplash.data.remote.ApiResult
 import com.zhigaras.unsplash.data.remote.BaseRemoteRepo
 import com.zhigaras.unsplash.data.remote.UnsplashApi
 import com.zhigaras.unsplash.di.IoDispatcher
+import com.zhigaras.unsplash.model.AuthCheckResult
 import com.zhigaras.unsplash.model.photodetails.PhotoDetails
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -30,6 +32,18 @@ class MainRepository @Inject constructor(
     
     suspend fun saveAccessToken(token: String) {
         dataStoreManager.saveToken(token)
+    }
+    
+    suspend fun checkAuthToken(): AuthCheckResult<Boolean> {
+        return AuthCheckResult.Result(dataStoreManager.checkToken())
+    }
+    
+    suspend fun clearDataStore() {
+        dataStoreManager.clearDataStore()
+    }
+    
+    suspend fun clearCachedPhotoDb() {
+        cachedPhotoDao.clearPhotoDb()
     }
     
     suspend fun getPhotoDetails(photoId: String): ApiResult<PhotoDetails> {

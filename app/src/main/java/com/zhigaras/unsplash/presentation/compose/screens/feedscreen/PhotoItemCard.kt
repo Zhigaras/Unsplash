@@ -1,4 +1,4 @@
-package com.zhigaras.unsplash.presentation.compose.screens.searchscreen
+package com.zhigaras.unsplash.presentation.compose.screens.feedscreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

@@ -40,7 +40,7 @@ import com.zhigaras.unsplash.domain.toShortForm
 import com.zhigaras.unsplash.model.photodetails.PhotoDetails
 import com.zhigaras.unsplash.presentation.MainViewModel
 import com.zhigaras.unsplash.presentation.compose.ErrorView
-import com.zhigaras.unsplash.presentation.compose.screens.searchscreen.PhotoBottomInfo
+import com.zhigaras.unsplash.presentation.compose.screens.feedscreen.PhotoBottomInfo
 
 @Composable
 fun DetailsScreen(
@@ -52,12 +52,6 @@ fun DetailsScreen(
         viewModel.getPhotoDetail(photoId)
     }
     val photoDetails = viewModel.photoDetailsFlow.collectAsState().value
-    
-    val checkLocationLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {}
-    
-    val linkShareLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {}
     
     val context = LocalContext.current
     
