@@ -1,6 +1,5 @@
 package com.zhigaras.unsplash.data
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -44,6 +43,7 @@ class MainRepository @Inject constructor(
     
     suspend fun clearCachedPhotoDb() {
         cachedPhotoDao.clearPhotoDb()
+        remoteKeysDao.clearRemoteKeys()
     }
     
     suspend fun getPhotoDetails(photoId: String): ApiResult<PhotoDetails> {

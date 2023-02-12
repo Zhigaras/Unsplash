@@ -25,8 +25,7 @@ import com.zhigaras.unsplash.presentation.compose.LoadingView
 @Composable
 fun FeedScreen(
     viewModel: MainViewModel = hiltViewModel(),
-    onPhotoClick: (String) -> Unit,
-    onLikeClick: () -> Unit
+    onPhotoClick: (String) -> Unit
 ) {
     val state = rememberLazyStaggeredGridState(initialFirstVisibleItemIndex = 0)
     val pagedPhotos = viewModel.pagedPhotos.collectAsLazyPagingItems()
@@ -47,7 +46,7 @@ fun FeedScreen(
             photoEntity?.let {
                 PhotoItemCard(
                     photoItem = it, itemWidth,
-                    onLikeClick = onLikeClick,
+                    onLikeClick = {},
                     onPhotoClick = onPhotoClick
                 )
             }

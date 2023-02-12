@@ -1,11 +1,12 @@
 package com.zhigaras.unsplash.presentation.compose.screens.feedscreen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -37,7 +38,8 @@ fun PhotoItemCard(
             .size(
                 width = itemWidth,
                 height = imageHeight
-            ).clickable { onPhotoClick(photoItem.id) }
+            )
+            .clickable { onPhotoClick(photoItem.id) }
     ) {
         GlideImage(
             model = photoItem.urlRegular.toUri(),
@@ -52,7 +54,7 @@ fun PhotoItemCard(
             userName = photoItem.userUsername,
             userInstagramName = photoItem.userInstagramUsername,
             likes = photoItem.likes,
-            isLiked = photoItem.likedByUser,
+            _isLiked = photoItem.likedByUser,
             onLikeClick = onLikeClick
         )
     }
@@ -66,10 +68,10 @@ fun PhotoBottomInfo(
     userName: String?,
     userInstagramName: String?,
     likes: Int,
-    isLiked: Boolean,
+    _isLiked: Boolean,
     onLikeClick: () -> Unit = {}
 ) {
-    val likeImg = if (isLiked) R.drawable.is_liked_icon else R.drawable.is_not_liked_2
+    var isLiked by remember { mutableStateOf(_isLiked) }
     
     Row(
         modifier = modifier
@@ -105,12 +107,16 @@ fun PhotoBottomInfo(
             }
         }
         Text(text = likes.toShortForm())
-        Image(
-            painter = painterResource(id = likeImg),
-            contentDescription = null,
+        IconToggleButton(checked = isLiked,
+            onCheckedChange = { isLiked = !isLiked },
             modifier = Modifier
                 .padding(4.dp)
                 .clickable { onLikeClick() }
-        )
+        ) {
+            Icon(
+                painter = painterResource(id = if (isLiked) R.drawable.is_liked_icon else R.drawable.is_not_liked_2),
+                contentDescription = null
+            )
+        }
     }
 }

@@ -10,6 +10,7 @@ import com.zhigaras.unsplash.data.locale.DataStoreManager
 import com.zhigaras.unsplash.data.locale.db.CachedPhotoDao
 import com.zhigaras.unsplash.data.locale.db.CachedPhotoDatabase
 import com.zhigaras.unsplash.data.locale.db.RemoteKeysDao
+import com.zhigaras.unsplash.data.remote.AuthInterceptor
 import com.zhigaras.unsplash.data.remote.UnsplashApi
 import dagger.Module
 import dagger.Provides
@@ -36,12 +37,17 @@ class DataModule {
     
     @Provides
     @Singleton
-    fun providesRetrofit(): UnsplashApi {
+    fun providesRetrofit(dataStoreManager: DataStoreManager): UnsplashApi {
         return Retrofit.Builder()
             .baseUrl(UnsplashApi.BASE_URL)
-            .client(OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor().also {
-                it.level = HttpLoggingInterceptor.Level.BODY
-            }).build())
+            .client(
+                OkHttpClient.Builder()
+                    .addInterceptor(AuthInterceptor(dataStoreManager))
+                    .addInterceptor(HttpLoggingInterceptor().also {
+                    it.level = HttpLoggingInterceptor.Level.BODY
+                })
+                    .build()
+            )
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(UnsplashApi::class.java)

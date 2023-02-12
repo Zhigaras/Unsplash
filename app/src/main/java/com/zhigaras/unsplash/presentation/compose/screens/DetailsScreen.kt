@@ -4,8 +4,6 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -151,7 +149,7 @@ fun PhotoBlock(
             userName = photoDetails.user.name,
             userInstagramName = photoDetails.user.instagramUsername,
             likes = photoDetails.likes,
-            isLiked = photoDetails.likedByUser
+            _isLiked = photoDetails.likedByUser
         )
     }
 }

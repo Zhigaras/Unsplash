@@ -38,8 +38,7 @@ fun SetupNavHost(
             FeedScreen(
                 onPhotoClick = { photoId ->
                     navController.navigateSingleTopTo("${Details.route}/$photoId")
-                },
-                onLikeClick = { TODO() }
+                }
             )
         }
         

@@ -23,9 +23,12 @@ class DataStoreManager @Inject constructor(
         var log = mapOf<Preferences.Key<*>, Any>()
         dataStore.edit {
             log = it.asMap()
-            
         }
         Log.d("AAA prefs", log.toString())
+    }
+    
+    suspend fun getToken(): String? {
+        return dataStore.edit { }[stringPreferencesKey(AUTH_TOKEN_KEY)]
     }
     
     suspend fun checkToken(): Boolean {
@@ -35,13 +38,6 @@ class DataStoreManager @Inject constructor(
     suspend fun clearDataStore() {
         dataStore.edit {
             it.clear()
-            
         }
-        var log = mapOf<Preferences.Key<*>, Any>()
-        dataStore.edit {
-            log = it.asMap()
-        
-        }
-        Log.d("AAA cleared prefs", log.toString())
     }
 }

@@ -29,4 +29,8 @@ class MainViewModel @Inject constructor(
             _photoDetailsFlow.value = result
         }
     }
+    
+    fun onLikeClick(isLiked: Boolean, photoId: String) {
+    
+    }
 }
