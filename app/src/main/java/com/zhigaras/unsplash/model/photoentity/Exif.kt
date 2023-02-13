@@ -1,4 +1,4 @@
-package com.zhigaras.unsplash.model.photodetails
+package com.zhigaras.unsplash.model.photoentity
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

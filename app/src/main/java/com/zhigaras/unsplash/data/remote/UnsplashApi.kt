@@ -1,7 +1,6 @@
 package com.zhigaras.unsplash.data.remote
 
-import com.zhigaras.unsplash.model.photodetails.PhotoDetails
-import com.zhigaras.unsplash.model.photoitem.PhotoItem
+import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -19,28 +18,28 @@ interface UnsplashApi {
     suspend fun loadFeedPhotos(
         @Query("page") page: Int,
         @Query("per_page") perPage: Int
-    ): Response<List<PhotoItem>>
+    ): Response<List<PhotoEntity>>
     
     @GET("photos/{id}")
     suspend fun getPhotoDetails(
         @Path("id") photoId: String
-    ): Response<PhotoDetails>
+    ): Response<PhotoEntity>
     
     @GET("search/photos")
     suspend fun searchPhotos(
         @Query("query") query: String,
         @Query("page") page: Int,
         @Query("per_page") perPage: Int
-    ): Response<List<PhotoItem>>
+    ): Response<List<PhotoEntity>>
     
     @POST("photos/{id}/like")
     suspend fun addToFavorites(
         @Path("id") photoId: String
-    ): Response<PhotoDetails>
+    ): Response<PhotoEntity>
     
     @DELETE("photos/{id}/like")
     suspend fun removeFromFavorite(
         @Path("id") photoId: String
-    ): Response<PhotoDetails>
+    ): Response<PhotoEntity>
     
 }

@@ -1,4 +1,4 @@
-package com.zhigaras.unsplash.model.photoitem
+package com.zhigaras.unsplash.model.photoentity
 
 
 import com.squareup.moshi.Json
@@ -11,5 +11,5 @@ data class ProfileImage(
     @Json(name = "medium")
     val medium: String,
     @Json(name = "small")
-    val small: String
+    val mini: String
 )

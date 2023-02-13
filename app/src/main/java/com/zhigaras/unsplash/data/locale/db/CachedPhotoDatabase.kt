@@ -2,6 +2,7 @@ package com.zhigaras.unsplash.data.locale.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 
 @Database(
     entities = [PhotoEntity::class, RemoteKeys::class],

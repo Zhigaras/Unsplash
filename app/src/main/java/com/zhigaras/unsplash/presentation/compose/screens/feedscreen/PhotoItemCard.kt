@@ -19,11 +19,10 @@ import androidx.core.net.toUri
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.zhigaras.unsplash.R
-import com.zhigaras.unsplash.data.locale.db.PhotoEntity
 import com.zhigaras.unsplash.data.remote.ApiResult
 import com.zhigaras.unsplash.data.remote.ApiStatus.*
 import com.zhigaras.unsplash.domain.toShortForm
-import com.zhigaras.unsplash.model.photodetails.PhotoDetails
+import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -33,7 +32,7 @@ fun PhotoItemCard(
     childModifier: Modifier = Modifier,
     onPhotoClick: (String) -> Unit,
     onLikeClick: () -> Unit,
-    likeChangingState: State<ApiResult<PhotoDetails>>
+    likeChangingState: State<ApiResult<PhotoEntity>>
 ) {
     val imageHeight = photoItem.height * itemWidth / photoItem.width
     
@@ -46,7 +45,7 @@ fun PhotoItemCard(
             .clickable { onPhotoClick(photoItem.id) }
     ) {
         GlideImage(
-            model = photoItem.urlRegular.toUri(),
+            model = photoItem.urls.regular.toUri(),
             contentDescription = null,
             modifier = childModifier
         )
@@ -54,9 +53,9 @@ fun PhotoItemCard(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .height(40.dp),
-            userProfileImage = photoItem.userProfileImage,
-            userName = photoItem.userUsername,
-            userInstagramName = photoItem.userInstagramUsername,
+            userProfileImage = photoItem.user.profileImage.mini,
+            userName = photoItem.user.fullName,
+            userInstagramName = photoItem.user.instagramUsername,
             likes = photoItem.likes,
             _isLiked = photoItem.likedByUser,
             onLikeClick = onLikeClick,
@@ -75,7 +74,7 @@ fun PhotoBottomInfo(
     likes: Int,
     _isLiked: Boolean,
     onLikeClick: () -> Unit = {},
-    likeChangingState: State<ApiResult<PhotoDetails>>
+    likeChangingState: State<ApiResult<PhotoEntity>>
 ) {
     Row(
         modifier = modifier

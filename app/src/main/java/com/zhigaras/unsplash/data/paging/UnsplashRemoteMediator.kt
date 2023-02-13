@@ -4,6 +4,7 @@ import androidx.paging.*
 import androidx.room.withTransaction
 import com.zhigaras.unsplash.data.locale.db.*
 import com.zhigaras.unsplash.data.remote.UnsplashApi
+import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -42,7 +43,7 @@ class UnsplashRemoteMediator @Inject constructor(
         
         try {
             val photos = unsplashApi.loadFeedPhotos(page, PAGE_SIZE)
-                .body()?.map { it.toPhotoEntity() }
+                .body()
             try {
                 checkNotNull(photos)
             } catch (exception: java.lang.IllegalStateException) {

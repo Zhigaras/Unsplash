@@ -6,7 +6,7 @@ import androidx.paging.cachedIn
 import com.zhigaras.unsplash.data.MainRepository
 import com.zhigaras.unsplash.data.remote.ApiResult
 import com.zhigaras.unsplash.di.IoDispatcher
-import com.zhigaras.unsplash.model.photodetails.PhotoDetails
+import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,10 +22,10 @@ class MainViewModel @Inject constructor(
     
     val pagedPhotos = mainRepository.loadPhotos().cachedIn(viewModelScope)
     
-    private val _photoDetailsFlow = MutableStateFlow<ApiResult<PhotoDetails>>(ApiResult.Loading())
+    private val _photoDetailsFlow = MutableStateFlow<ApiResult<PhotoEntity>>(ApiResult.Loading())
     val photoDetailsFlow get() = _photoDetailsFlow.asStateFlow()
     
-    private val _likeChangingFlow = MutableStateFlow<ApiResult<PhotoDetails>>(ApiResult.NotLoadedYet())
+    private val _likeChangingFlow = MutableStateFlow<ApiResult<PhotoEntity>>(ApiResult.NotLoadedYet())
     val likeChangingFlow get() = _likeChangingFlow.asStateFlow()
     
     fun getPhotoDetail(photoId: String) {

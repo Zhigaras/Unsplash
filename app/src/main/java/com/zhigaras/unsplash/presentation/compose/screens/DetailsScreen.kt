@@ -34,10 +34,8 @@ import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.data.remote.ApiResult
 import com.zhigaras.unsplash.data.remote.ApiStatus.*
 import com.zhigaras.unsplash.domain.ExifText
-import com.zhigaras.unsplash.domain.hasSearchTags
-import com.zhigaras.unsplash.domain.toHashTagString
 import com.zhigaras.unsplash.domain.toShortForm
-import com.zhigaras.unsplash.model.photodetails.PhotoDetails
+import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import com.zhigaras.unsplash.presentation.MainViewModel
 import com.zhigaras.unsplash.presentation.compose.ErrorView
 import com.zhigaras.unsplash.presentation.compose.screens.feedscreen.PhotoBottomInfo
@@ -101,11 +99,11 @@ fun DetailsScreen(
 @Composable
 fun DetailsSet(
     modifier: Modifier = Modifier,
-    photoDetails: PhotoDetails?,
+    photoDetails: PhotoEntity?,
     onLocationClick: (String) -> Unit = {},
     onShareClick: (String) -> Unit = {},
     onDownloadClick: (String, String) -> Unit,
-    likeChangingState: State<ApiResult<PhotoDetails>>
+    likeChangingState: State<ApiResult<PhotoEntity>>
 ) {
     Column(
         modifier = modifier
@@ -139,9 +137,9 @@ fun DetailsSet(
 @Composable
 fun PhotoBlock(
     modifier: Modifier,
-    photoDetails: PhotoDetails,
+    photoDetails: PhotoEntity,
     onShareClick: (String) -> Unit,
-    likeChangingState: State<ApiResult<PhotoDetails>>
+    likeChangingState: State<ApiResult<PhotoEntity>>
 ) {
     Box(modifier) {
         GlideImage(model = photoDetails.urls.regular, contentDescription = null)
@@ -157,7 +155,7 @@ fun PhotoBlock(
                 .height(40.dp)
                 .align(Alignment.BottomCenter),
             userProfileImage = photoDetails.user.profileImage.medium,
-            userName = photoDetails.user.name,
+            userName = photoDetails.user.fullName,
             userInstagramName = photoDetails.user.instagramUsername,
             likes = photoDetails.likes,
             _isLiked = photoDetails.likedByUser,
@@ -169,10 +167,10 @@ fun PhotoBlock(
 @Composable
 fun LocationBlock(
     modifier: Modifier,
-    photoDetails: PhotoDetails,
+    photoDetails: PhotoEntity,
     onLocationClick: (String) -> Unit
 ) {
-    photoDetails.location.name?.let {
+    photoDetails.location?.locationName?.let {
         val lat = photoDetails.location.position.latitude
         val lon = photoDetails.location.position.longitude
         Row(
@@ -191,11 +189,11 @@ fun LocationBlock(
 @Composable
 fun TagsBlock(
     modifier: Modifier,
-    photoDetails: PhotoDetails
+    photoDetails: PhotoEntity
 ) {
-    if (photoDetails.tags.hasSearchTags()) {
+    if (photoDetails.tagsString.isNotBlank()) {
         Text(
-            text = photoDetails.tags.toHashTagString(),
+            text = photoDetails.tagsString,
             modifier = modifier
                 .horizontalScroll(ScrollState(0)),
             textAlign = TextAlign.Center
@@ -206,26 +204,30 @@ fun TagsBlock(
 @Composable
 fun AboutBlock(
     modifier: Modifier,
-    photoDetails: PhotoDetails
+    photoDetails: PhotoEntity
 ) {
     Row(
         modifier = modifier.padding(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Column(modifier.weight(1f)) {
-            photoDetails.exif.make?.ExifText(fieldName = R.string.made_with)
-            photoDetails.exif.model?.ExifText(fieldName = R.string.model)
-            photoDetails.exif.exposureTime?.ExifText(fieldName = R.string.exposure)
-            photoDetails.exif.aperture?.ExifText(fieldName = R.string.aperture)
-            photoDetails.exif.focalLength?.ExifText(fieldName = R.string.focal_length)
-            photoDetails.exif.iso?.ExifText(fieldName = R.string.iso)
+            photoDetails.exif?.let {
+    
+                it.make?.ExifText(fieldName = R.string.made_with)
+                it.model?.ExifText(fieldName = R.string.model)
+                it.exposureTime?.ExifText(fieldName = R.string.exposure)
+                it.aperture?.ExifText(fieldName = R.string.aperture)
+                it.focalLength?.ExifText(fieldName = R.string.focal_length)
+                it.iso?.ExifText(fieldName = R.string.iso)
+            }
         }
+        
         Column(modifier.weight(1f)) {
             photoDetails.user.bio?.let {
                 Text(
                     text = buildString {
                         append(stringResource(R.string.about))
-                        append(photoDetails.user.name)
+                        append(photoDetails.user.fullName)
                         append(":")
                     },
                     style = MaterialTheme.typography.titleSmall
@@ -240,7 +242,7 @@ fun AboutBlock(
 fun DownloadBlock(
     modifier: Modifier,
     onDownloadClick: (String, String) -> Unit,
-    photoDetails: PhotoDetails
+    photoDetails: PhotoEntity
 ) {
     Row(
         horizontalArrangement = Arrangement.End,
@@ -258,7 +260,7 @@ fun DownloadBlock(
         )
         Text(text = buildString {
             append(" (")
-            append(photoDetails.downloads.toShortForm())
+            append(photoDetails.downloads!!.toShortForm())
             append(")")
         })
         Image(

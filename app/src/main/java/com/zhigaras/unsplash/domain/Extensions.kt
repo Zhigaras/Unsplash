@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.zhigaras.unsplash.model.photodetails.Tag
+import com.zhigaras.unsplash.model.photoentity.Tag
 
 fun Int.toShortForm(): String {
     return when (this) {
@@ -21,7 +21,8 @@ fun List<Tag>.hasSearchTags(): Boolean {
     return this.any { it.type == "search" }
 }
 
-fun List<Tag>.toHashTagString(): String {
+fun List<Tag>.toSearchTagString(): String {
+    if (!this.hasSearchTags()) return ""
     val tags = this.filter { it.type == "search" }
     return buildString {
         tags.forEach {

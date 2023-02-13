@@ -1,8 +1,7 @@
-package com.zhigaras.unsplash.model.photoitem
+package com.zhigaras.unsplash.model.photoentity
 
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.Embedded
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -11,13 +10,14 @@ data class User(
     @Json(name = "bio")
     val bio: String?,
     @Json(name = "id")
-    val id: String,
+    val userId: String,
     @Json(name = "instagram_username")
     val instagramUsername: String?,
     @Json(name = "location")
-    val location: String?,
+    val userLocation: String?,
     @Json(name = "name")
-    val name: String?,
+    val fullName: String?,
+    @Embedded
     @Json(name = "profile_image")
     val profileImage: ProfileImage,
     @Json(name = "username")
