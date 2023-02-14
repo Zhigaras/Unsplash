@@ -35,6 +35,7 @@ import com.zhigaras.unsplash.data.remote.ApiResult
 import com.zhigaras.unsplash.data.remote.ApiStatus.*
 import com.zhigaras.unsplash.domain.ExifText
 import com.zhigaras.unsplash.domain.toShortForm
+import com.zhigaras.unsplash.model.LikeResponseModel
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import com.zhigaras.unsplash.presentation.MainViewModel
 import com.zhigaras.unsplash.presentation.compose.ErrorView
@@ -46,10 +47,10 @@ fun DetailsScreen(
     viewModel: MainViewModel = hiltViewModel(),
     onDownloadClick: (String, String) -> Unit
 ) {
-    LaunchedEffect(key1 = Unit) {
-        viewModel.getPhotoDetail(photoId)
-    }
-    val photoDetails = viewModel.photoDetailsFlow.collectAsState().value
+//    LaunchedEffect(key1 = Unit) {
+//        viewModel.getPhotoDetail(photoId)
+//    }
+    val photoDetails = viewModel.getPhotoDetail(photoId).collectAsState(initial = ApiResult.Loading()).value
     val likeChangingState = viewModel.likeChangingFlow.collectAsState()
     val context = LocalContext.current
     
@@ -62,7 +63,6 @@ fun DetailsScreen(
                     highlight = PlaceholderHighlight.shimmer(highlightColor = Color.White)
                 ),
                 photoDetails = photoDetails.data,
-                onDownloadClick = { _, _ -> },
                 likeChangingState = likeChangingState
             )
         }
@@ -89,10 +89,11 @@ fun DetailsScreen(
                     }
                 },
                 onDownloadClick = onDownloadClick,
-                likeChangingState = likeChangingState
+                likeChangingState = likeChangingState,
+                onLikeClick = { isLiked, id -> viewModel.onLikeClick(isLiked, id)}
             )
         }
-        ERROR -> ErrorView(message = photoDetails.errorInfo?.message ?: "")
+        ERROR -> ErrorView(message = photoDetails.errorMessage ?: "")
     }
 }
 
@@ -102,8 +103,9 @@ fun DetailsSet(
     photoDetails: PhotoEntity?,
     onLocationClick: (String) -> Unit = {},
     onShareClick: (String) -> Unit = {},
-    onDownloadClick: (String, String) -> Unit,
-    likeChangingState: State<ApiResult<PhotoEntity>>
+    onDownloadClick: (String, String) -> Unit = { _, _ -> },
+    likeChangingState: State<ApiResult<LikeResponseModel>>,
+    onLikeClick: (Boolean, String) -> Unit = { _, _ -> }
 ) {
     Column(
         modifier = modifier
@@ -115,7 +117,8 @@ fun DetailsSet(
                 modifier.padding(vertical = 8.dp),
                 photoDetails,
                 onShareClick = onShareClick,
-                likeChangingState = likeChangingState
+                likeChangingState = likeChangingState,
+                onLikeClick = onLikeClick
             )
             LocationBlock(
                 modifier.padding(horizontal = 4.dp),
@@ -139,7 +142,8 @@ fun PhotoBlock(
     modifier: Modifier,
     photoDetails: PhotoEntity,
     onShareClick: (String) -> Unit,
-    likeChangingState: State<ApiResult<PhotoEntity>>
+    likeChangingState: State<ApiResult<LikeResponseModel>>,
+    onLikeClick: (Boolean, String) -> Unit
 ) {
     Box(modifier) {
         GlideImage(model = photoDetails.urls.regular, contentDescription = null)
@@ -154,12 +158,9 @@ fun PhotoBlock(
             modifier = Modifier
                 .height(40.dp)
                 .align(Alignment.BottomCenter),
-            userProfileImage = photoDetails.user.profileImage.medium,
-            userName = photoDetails.user.fullName,
-            userInstagramName = photoDetails.user.instagramUsername,
-            likes = photoDetails.likes,
-            _isLiked = photoDetails.likedByUser,
-            likeChangingState = likeChangingState
+            photo = photoDetails,
+            likeChangingState = likeChangingState,
+            onLikeClick = onLikeClick
         )
     }
 }
@@ -212,7 +213,7 @@ fun AboutBlock(
     ) {
         Column(modifier.weight(1f)) {
             photoDetails.exif?.let {
-    
+                
                 it.make?.ExifText(fieldName = R.string.made_with)
                 it.model?.ExifText(fieldName = R.string.model)
                 it.exposureTime?.ExifText(fieldName = R.string.exposure)

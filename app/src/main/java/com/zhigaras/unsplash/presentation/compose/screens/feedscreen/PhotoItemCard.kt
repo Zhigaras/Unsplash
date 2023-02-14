@@ -1,5 +1,7 @@
 package com.zhigaras.unsplash.presentation.compose.screens.feedscreen
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
@@ -9,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -22,6 +25,7 @@ import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.data.remote.ApiResult
 import com.zhigaras.unsplash.data.remote.ApiStatus.*
 import com.zhigaras.unsplash.domain.toShortForm
+import com.zhigaras.unsplash.model.LikeResponseModel
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -31,8 +35,8 @@ fun PhotoItemCard(
     itemWidth: Dp,
     childModifier: Modifier = Modifier,
     onPhotoClick: (String) -> Unit,
-    onLikeClick: () -> Unit,
-    likeChangingState: State<ApiResult<PhotoEntity>>
+    onLikeClick: (Boolean, String) -> Unit,
+    likeChangingState: State<ApiResult<LikeResponseModel>>
 ) {
     val imageHeight = photoItem.height * itemWidth / photoItem.width
     
@@ -53,11 +57,7 @@ fun PhotoItemCard(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .height(40.dp),
-            userProfileImage = photoItem.user.profileImage.mini,
-            userName = photoItem.user.fullName,
-            userInstagramName = photoItem.user.instagramUsername,
-            likes = photoItem.likes,
-            _isLiked = photoItem.likedByUser,
+            photo = photoItem,
             onLikeClick = onLikeClick,
             likeChangingState = likeChangingState
         )
@@ -68,73 +68,68 @@ fun PhotoItemCard(
 @Composable
 fun PhotoBottomInfo(
     modifier: Modifier,
-    userProfileImage: String,
-    userName: String?,
-    userInstagramName: String?,
-    likes: Int,
-    _isLiked: Boolean,
-    onLikeClick: () -> Unit = {},
-    likeChangingState: State<ApiResult<PhotoEntity>>
+    photo: PhotoEntity,
+    onLikeClick: (Boolean, String) -> Unit,
+    likeChangingState: State<ApiResult<LikeResponseModel>>
 ) {
-    Row(
-        modifier = modifier
-            .padding(4.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        GlideImage(
-            model = userProfileImage.toUri(),
-            contentDescription = stringResource(R.string.user_profile_image),
-            modifier = Modifier.padding(end = 4.dp)
+    with(photo) {
+        Row(
+            modifier = modifier
+                .padding(4.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            it.circleCrop()
-            
-        }
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(
-                text = userName.toString(),
-                maxLines = 1,
-                style = MaterialTheme.typography.labelMedium,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (userInstagramName != null && userInstagramName != "") {
-                val userInstagram = if (userInstagramName.contains('/'))
-                    userInstagramName.split('/').last { it != "" }
-                else userInstagramName
+            GlideImage(
+                model = user.profileImage.medium.toUri(),
+                contentDescription = stringResource(R.string.user_profile_image),
+                modifier = Modifier.padding(end = 4.dp)
+            ) {
+                it.circleCrop()
+                
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.SpaceEvenly) {
                 Text(
-                    text = "@$userInstagram",
+                    text = user.fullName.toString(),
                     maxLines = 1,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelMedium,
                     overflow = TextOverflow.Ellipsis
                 )
+                user.instagramUsernameCorrect.let {
+                    if (it.isNotBlank()) {
+                        Text(
+                            text = "@$it",
+                            maxLines = 1,
+                            style = MaterialTheme.typography.labelSmall,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
             }
-        }
-        
-        when (likeChangingState.value.status) {
-            NOT_LOADED_YET -> {
-                LikesArea(
-                    likes = likes,
-                    _isLiked = _isLiked,
-                    enabled = true,
-                    onLikeClick = onLikeClick
-                )
-            }
-            ERROR -> { /*TODO*/}
-            LOADING -> {
-                LikesArea(
-                    likes = likes,
-                    _isLiked = _isLiked,
-                    onLikeClick = {},
-                    enabled = false
-                )
-            }
-            SUCCESS -> {
-                likeChangingState.value.data?.let {
+            
+            when (likeChangingState.value.status) {
+                NOT_LOADED_YET, SUCCESS -> {
                     LikesArea(
-                        likes = it.likes,
-                        _isLiked = it.likedByUser,
+                        likes = likes,
+                        _isLiked = likedByUser,
+                        enabled = true,
                         onLikeClick = onLikeClick,
-                        enabled = true
+                        photoId = id
+                    )
+                }
+                ERROR -> {
+                    Toast.makeText(
+                        LocalContext.current,
+                        likeChangingState.value.errorMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                LOADING -> {
+                    LikesArea(
+                        likes = likes,
+                        _isLiked = likedByUser,
+                        onLikeClick = onLikeClick,
+                        enabled = false,
+                        photoId = id
                     )
                 }
             }
@@ -146,18 +141,18 @@ fun PhotoBottomInfo(
 fun LikesArea(
     likes: Int,
     _isLiked: Boolean,
-    onLikeClick: () -> Unit,
+    photoId: String,
+    onLikeClick: (Boolean, String) -> Unit,
     enabled: Boolean
 ) {
-    var isLiked by remember { mutableStateOf(_isLiked) }
+    val isLiked by remember { mutableStateOf(_isLiked) }
     
     Text(text = likes.toShortForm())
     IconToggleButton(
         checked = isLiked,
-        onCheckedChange = { isLiked = !isLiked },
+        onCheckedChange = { onLikeClick(_isLiked, photoId); Log.d("AAA", "1clicked") },
         modifier = Modifier
-            .padding(4.dp)
-            .clickable { onLikeClick },
+            .padding(4.dp),
         enabled = enabled
     ) {
         Icon(

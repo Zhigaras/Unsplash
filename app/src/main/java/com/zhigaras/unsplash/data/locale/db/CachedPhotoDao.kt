@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
+import androidx.room.Update
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 
 @Dao
@@ -18,4 +19,7 @@ interface CachedPhotoDao {
 
     @Query("DELETE FROM cached_photo")
     suspend fun clearPhotoDb()
+    
+    @Update
+    suspend fun update(photoEntity: PhotoEntity)
 }

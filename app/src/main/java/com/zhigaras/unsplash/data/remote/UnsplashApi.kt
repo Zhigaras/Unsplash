@@ -1,6 +1,11 @@
 package com.zhigaras.unsplash.data.remote
 
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Update
+import com.zhigaras.unsplash.model.LikeResponseModel
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
+import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -35,11 +40,10 @@ interface UnsplashApi {
     @POST("photos/{id}/like")
     suspend fun addToFavorites(
         @Path("id") photoId: String
-    ): Response<PhotoEntity>
+    ): Response<LikeResponseModel>
     
     @DELETE("photos/{id}/like")
     suspend fun removeFromFavorite(
         @Path("id") photoId: String
-    ): Response<PhotoEntity>
-    
+    ): Response<LikeResponseModel>
 }

@@ -13,43 +13,33 @@ enum class ApiStatus {
 sealed class ApiResult<out T>(
     val status: ApiStatus,
     val data: T?,
-    val errorInfo: ErrorInfo?
+    val errorMessage: String?
 ) {
     
     data class Success<out R>(val _data: R?) : ApiResult<R>(
         status = ApiStatus.SUCCESS,
         data = _data,
-        errorInfo = null
+        errorMessage = null
     )
     
     data class Error(
-        val exception: String =  Resources.getSystem().getString(R.string.something_went_wrong),
-        val _needToGoBack: Boolean = false,
-//        val _errorButtonText: Int = R.string.try_again
+        val exception: String = Resources.getSystem().getString(R.string.something_went_wrong)
     ) : ApiResult<Nothing>(
         status = ApiStatus.ERROR,
         data = null,
-        errorInfo = ErrorInfo(
-            message = exception,
-            needToGoBack = _needToGoBack,
-//            errorButtonText = _errorButtonText
-        )
+        errorMessage = exception
     )
+    
     
     class Loading<out R> : ApiResult<R>(
         status = ApiStatus.LOADING,
         data = null,
-        errorInfo = null
+        errorMessage = null
     )
+    
     class NotLoadedYet<out R> : ApiResult<R>(
         status = ApiStatus.NOT_LOADED_YET,
         data = null,
-        errorInfo = null
+        errorMessage = null
     )
 }
-
-class ErrorInfo(
-    val message: String,
-    val needToGoBack: Boolean,
-//    val errorButtonText: Int
-)

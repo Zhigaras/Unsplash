@@ -49,7 +49,7 @@ fun FeedScreen(
             photoEntity?.let {
                 PhotoItemCard(
                     photoItem = it, itemWidth,
-                    onLikeClick = {  },
+                    onLikeClick = { isLiked, photoId -> viewModel.onLikeClick(isLiked, photoId) },
                     onPhotoClick = onPhotoClick,
                     likeChangingState = likeChangingState
                 )
