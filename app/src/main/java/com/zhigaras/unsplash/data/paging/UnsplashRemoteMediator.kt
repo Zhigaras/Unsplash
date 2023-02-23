@@ -14,7 +14,8 @@ class UnsplashRemoteMediator @Inject constructor(
     private val unsplashApi: UnsplashApi,
     private val cachedPhotoDatabase: CachedPhotoDatabase,
     private val cachedPhotoDao: CachedPhotoDao,
-    private val remoteKeysDao: RemoteKeysDao
+    private val remoteKeysDao: RemoteKeysDao,
+    private val query: String?
 ) : RemoteMediator<Int, PhotoEntity>() {
     override suspend fun load(
         loadType: LoadType,
@@ -42,8 +43,11 @@ class UnsplashRemoteMediator @Inject constructor(
         }
         
         try {
-            val photos = unsplashApi.loadFeedPhotos(page, PAGE_SIZE)
-                .body()
+            val photos = if (query == null){
+                unsplashApi.loadFeedPhotos(page = page, perPage =  PAGE_SIZE).body()
+            } else {
+                unsplashApi.loadSearchPhoto(query = query, page = page, perPage = PAGE_SIZE).body()?.results
+            }
             try {
                 checkNotNull(photos)
             } catch (exception: java.lang.IllegalStateException) {

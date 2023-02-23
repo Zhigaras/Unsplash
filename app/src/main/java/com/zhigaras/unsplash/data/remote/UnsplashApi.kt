@@ -1,11 +1,8 @@
 package com.zhigaras.unsplash.data.remote
 
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Update
 import com.zhigaras.unsplash.model.LikeResponseModel
+import com.zhigaras.unsplash.model.SearchResponseModel
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
-import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -31,11 +28,11 @@ interface UnsplashApi {
     ): Response<PhotoEntity>
     
     @GET("search/photos")
-    suspend fun searchPhotos(
+    suspend fun loadSearchPhoto(
         @Query("query") query: String,
         @Query("page") page: Int,
         @Query("per_page") perPage: Int
-    ): Response<List<PhotoEntity>>
+    ): Response<SearchResponseModel>
     
     @POST("photos/{id}/like")
     suspend fun addToFavorites(

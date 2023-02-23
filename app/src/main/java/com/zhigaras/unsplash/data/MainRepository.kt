@@ -9,10 +9,7 @@ import com.zhigaras.unsplash.data.locale.db.CachedPhotoDao
 import com.zhigaras.unsplash.data.locale.db.CachedPhotoDatabase
 import com.zhigaras.unsplash.data.locale.db.RemoteKeysDao
 import com.zhigaras.unsplash.data.paging.UnsplashRemoteMediator
-import com.zhigaras.unsplash.data.remote.ApiResult
-import com.zhigaras.unsplash.data.remote.AuthCheckResult
-import com.zhigaras.unsplash.data.remote.BaseRemoteRepo
-import com.zhigaras.unsplash.data.remote.UnsplashApi
+import com.zhigaras.unsplash.data.remote.*
 import com.zhigaras.unsplash.di.IoDispatcher
 import com.zhigaras.unsplash.model.LikeResponseModel
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
@@ -63,15 +60,31 @@ class MainRepository @Inject constructor(
     }
     
     @OptIn(ExperimentalPagingApi::class)
-    fun loadPhotos(): Flow<PagingData<PhotoEntity>> {
+    fun loadFeedPhotos(): Flow<PagingData<PhotoEntity>> {
         return Pager(
             config = PagingConfig(UnsplashRemoteMediator.PAGE_SIZE),
             remoteMediator = UnsplashRemoteMediator(
                 unsplashApi = unsplashApi,
                 cachedPhotoDatabase = cachedPhotoDatabase,
                 cachedPhotoDao = cachedPhotoDao,
-                remoteKeysDao = remoteKeysDao
+                remoteKeysDao = remoteKeysDao,
+                query = null
                 ),
+            pagingSourceFactory = { cachedPhotoDao.showAll() }
+        ).flow
+    }
+    
+    @OptIn(ExperimentalPagingApi::class)
+    fun loadSearchPhotos(query: String): Flow<PagingData<PhotoEntity>> {
+        return Pager(
+            config = PagingConfig(UnsplashRemoteMediator.PAGE_SIZE),
+            remoteMediator = UnsplashRemoteMediator(
+                unsplashApi = unsplashApi,
+                cachedPhotoDatabase = cachedPhotoDatabase,
+                cachedPhotoDao = cachedPhotoDao,
+                remoteKeysDao = remoteKeysDao,
+                query = query
+            ),
             pagingSourceFactory = { cachedPhotoDao.showAll() }
         ).flow
     }

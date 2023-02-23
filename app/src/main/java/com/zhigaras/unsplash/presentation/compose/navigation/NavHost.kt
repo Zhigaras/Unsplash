@@ -10,10 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import com.zhigaras.unsplash.domain.navigateSingleTopTo
 import com.zhigaras.unsplash.presentation.AuthViewModel
-import com.zhigaras.unsplash.presentation.compose.screens.DetailsScreen
-import com.zhigaras.unsplash.presentation.compose.screens.FavoritesScreen
-import com.zhigaras.unsplash.presentation.compose.screens.OnboardingScreen
-import com.zhigaras.unsplash.presentation.compose.screens.ProfileScreen
+import com.zhigaras.unsplash.presentation.compose.screens.*
 import com.zhigaras.unsplash.presentation.compose.screens.feedscreen.FeedScreen
 
 @Composable
@@ -54,6 +51,19 @@ fun SetupNavHost(
                 photoId = photoId,
                 onDownloadClick = onDownloadClick
             )
+        }
+        composable(
+            route = Search.routeWithArgs,
+            arguments = Search.arguments
+        ) { navBackStackEntry ->
+            val query = navBackStackEntry.arguments?.getString((Search.queryArg)) ?: ""
+            SearchScreen(
+                query = query,
+                onPhotoClick = { photoId ->
+                    navController.navigateSingleTopTo("${Details.route}/$photoId")
+                }
+            )
+            
         }
         composable(route = Onboarding.route) {
             OnboardingScreen {

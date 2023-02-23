@@ -1,5 +1,6 @@
 package com.zhigaras.unsplash.presentation.compose
 
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,13 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zhigaras.unsplash.R
-import com.zhigaras.unsplash.presentation.compose.navigation.Destinations
-import com.zhigaras.unsplash.presentation.compose.navigation.Details
-import com.zhigaras.unsplash.presentation.compose.navigation.Feed
-import com.zhigaras.unsplash.presentation.compose.navigation.Profile
+import com.zhigaras.unsplash.presentation.compose.navigation.*
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class,
@@ -31,12 +28,21 @@ fun UnsplashTopBar(
     currentScreen: Destinations,
     onBackClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
-    onSearchButtonClick: (String) -> Unit = {},
+    onStartSearchClick: (String) -> Unit,
+    navigateToFeedScreen: () -> Unit
 ) {
     var isBackButtonVisible by remember { mutableStateOf(false) }
     isBackButtonVisible = currentScreen == Details
     var isSearchActive by remember { mutableStateOf(false) }
     val textInputState = remember { mutableStateOf(TextFieldValue("")) }
+    
+    fun onOpenCloseSearchClick() {
+        Log.d("AAA isSearchActive", isSearchActive.toString())
+        if (isSearchActive) {
+            navigateToFeedScreen()
+        }
+        isSearchActive = !isSearchActive
+    }
     
     TopAppBar(title = {
         Row(
@@ -55,7 +61,7 @@ fun UnsplashTopBar(
                     SearchElement(
                         modifier = Modifier.weight(1f),
                         textInputState = textInputState,
-                        onSearchButtonClick = onSearchButtonClick
+                        onStartSearchClick = onStartSearchClick
                     )
                 } else {
                     TitleElement(
@@ -64,11 +70,11 @@ fun UnsplashTopBar(
                     )
                 }
             }
-            if (currentScreen == Feed) {
+            if (currentScreen == Feed || currentScreen == Search) {
                 IconToggleButton(
                     modifier = Modifier.padding(8.dp),
                     checked = isSearchActive,
-                    onCheckedChange = { isSearchActive = !isSearchActive }) {
+                    onCheckedChange = { onOpenCloseSearchClick() }) {
                     Icon(
                         imageVector = if (isSearchActive) Icons.Outlined.Close
                         else Icons.Outlined.Search,
@@ -102,7 +108,7 @@ fun UnsplashTopBar(
 fun SearchElement(
     modifier: Modifier,
     textInputState: MutableState<TextFieldValue>,
-    onSearchButtonClick: (String) -> Unit
+    onStartSearchClick: (String) -> Unit
 ) {
     TextField(
         modifier = modifier,
@@ -110,7 +116,7 @@ fun SearchElement(
         onValueChange = { textInputState.value = it },
         trailingIcon = {
             IconButton(
-                onClick = { onSearchButtonClick(textInputState.value.text) },
+                onClick = { onStartSearchClick(textInputState.value.text) },
                 enabled = textInputState.value != TextFieldValue("")
             ) {
                 Icon(imageVector = Icons.Outlined.ArrowForward, null)
@@ -132,10 +138,10 @@ fun TitleElement(
     }
 }
 
-@Preview
-@Composable
-fun TopBarPreview() {
-    UnsplashTopBar(currentScreen = Profile) {
-    
-    }
-}
+//@Preview
+//@Composable
+//fun TopBarPreview() {
+//    UnsplashTopBar(currentScreen = Profile) {
+//
+//    }
+//}

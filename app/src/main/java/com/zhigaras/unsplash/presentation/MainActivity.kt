@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setDestinationInExternalPublicDir(
                 Environment.DIRECTORY_PICTURES,
-                "unsplash-image.jpeg"
+                "unsplash-$photoId.jpeg"
             )
         downloadId = downloadManager.enqueue(request)
     }
@@ -164,7 +164,11 @@ fun UnsplashApp(
             UnsplashTopBar(
                 currentScreen = currentScreen,
                 onBackClick = { navController.popBackStack() },
-                onLogoutClick = { logOut() }
+                onLogoutClick = { logOut() },
+                onStartSearchClick = {query ->
+                    navController.navigateSingleTopTo("${Search.route}/$query")
+                },
+                navigateToFeedScreen = { navController.navigate(Feed.route) }
             )
         },
         bottomBar = {
