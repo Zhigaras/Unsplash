@@ -6,18 +6,13 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,21 +20,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.placeholder
-import com.google.accompanist.placeholder.shimmer
 import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.data.remote.ApiResult
 import com.zhigaras.unsplash.data.remote.ApiStatus.*
 import com.zhigaras.unsplash.domain.ExifText
 import com.zhigaras.unsplash.domain.toShortForm
-import com.zhigaras.unsplash.model.LikeResponseModel
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import com.zhigaras.unsplash.presentation.MainViewModel
 import com.zhigaras.unsplash.presentation.compose.ErrorView
-import com.zhigaras.unsplash.presentation.compose.screens.feedscreen.PhotoBottomInfo
+import com.zhigaras.unsplash.presentation.compose.LoadingView
+import com.zhigaras.unsplash.presentation.compose.screens.feedscreen.PhotoItemCard
 
 @Composable
 fun DetailsScreen(
@@ -47,24 +37,16 @@ fun DetailsScreen(
     viewModel: MainViewModel = hiltViewModel(),
     onDownloadClick: (String, String) -> Unit
 ) {
-//    LaunchedEffect(key1 = Unit) {
-//        viewModel.getPhotoDetail(photoId)
-//    }
-    val photoDetails = viewModel.getPhotoDetail(photoId).collectAsState(initial = ApiResult.Loading()).value
-    val likeChangingState = viewModel.likeChangingFlow.collectAsState()
+    LaunchedEffect(key1 = Unit) {
+        viewModel.getPhotoDetails(photoId)
+    }
+    val photoDetails =
+        viewModel.photoDetailsFlow.collectAsState(initial = ApiResult.Loading()).value
     val context = LocalContext.current
     
     when (photoDetails.status) {
         LOADING, NOT_LOADED_YET -> {
-            DetailsSet(
-                modifier = Modifier.placeholder(
-                    visible = true,
-                    color = Color.Gray,
-                    highlight = PlaceholderHighlight.shimmer(highlightColor = Color.White)
-                ),
-                photoDetails = photoDetails.data,
-                likeChangingState = likeChangingState
-            )
+            LoadingView(Modifier.fillMaxSize())
         }
         SUCCESS -> {
             DetailsSet(
@@ -89,8 +71,7 @@ fun DetailsScreen(
                     }
                 },
                 onDownloadClick = onDownloadClick,
-                likeChangingState = likeChangingState,
-                onLikeClick = { isLiked, id -> viewModel.onLikeClick(isLiked, id)}
+                onLikeClick = { isLiked, id -> viewModel.onLikeClick(isLiked, id) }
             )
         }
         ERROR -> ErrorView(message = photoDetails.errorMessage ?: "")
@@ -104,7 +85,6 @@ fun DetailsSet(
     onLocationClick: (String) -> Unit = {},
     onShareClick: (String) -> Unit = {},
     onDownloadClick: (String, String) -> Unit = { _, _ -> },
-    likeChangingState: State<ApiResult<LikeResponseModel>>,
     onLikeClick: (Boolean, String) -> Unit = { _, _ -> }
 ) {
     Column(
@@ -113,12 +93,13 @@ fun DetailsSet(
             .verticalScroll(state = ScrollState(0))
     ) {
         if (photoDetails != null) {
-            PhotoBlock(
-                modifier.padding(vertical = 8.dp),
-                photoDetails,
+            PhotoItemCard(
+                modifier = modifier.padding(vertical = 8.dp),
+                photoItem = photoDetails,
                 onShareClick = onShareClick,
-                likeChangingState = likeChangingState,
-                onLikeClick = onLikeClick
+                onLikeClick = onLikeClick,
+                needToShowShareButton = true,
+                
             )
             LocationBlock(
                 modifier.padding(horizontal = 4.dp),
@@ -133,35 +114,6 @@ fun DetailsSet(
                 photoDetails = photoDetails
             )
         }
-    }
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun PhotoBlock(
-    modifier: Modifier,
-    photoDetails: PhotoEntity,
-    onShareClick: (String) -> Unit,
-    likeChangingState: State<ApiResult<LikeResponseModel>>,
-    onLikeClick: (Boolean, String) -> Unit
-) {
-    Box(modifier) {
-        GlideImage(model = photoDetails.urls.regular, contentDescription = null)
-        Icon(
-            imageVector = Icons.Default.Share, contentDescription = "share",
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(48.dp)
-                .padding(8.dp)
-                .clickable { onShareClick(photoDetails.links.html) })
-        PhotoBottomInfo(
-            modifier = Modifier
-                .height(40.dp)
-                .align(Alignment.BottomCenter),
-            photo = photoDetails,
-            likeChangingState = likeChangingState,
-            onLikeClick = onLikeClick
-        )
     }
 }
 

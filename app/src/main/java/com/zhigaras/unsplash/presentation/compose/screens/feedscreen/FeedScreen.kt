@@ -9,10 +9,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -33,10 +31,6 @@ fun FeedScreen(
     val orientation = Resources.getSystem().configuration.orientation
     val cellsCount = if (orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 4
     val itemsPadding = 8.dp
-    val screenWidth =
-        (Resources.getSystem().displayMetrics.widthPixels / Resources.getSystem().displayMetrics.density).dp
-    val itemWidth = (screenWidth - (cellsCount - 1) * itemsPadding) / cellsCount
-    val likeChangingState = viewModel.likeChangingFlow.collectAsState()
     
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(cellsCount),
@@ -48,10 +42,9 @@ fun FeedScreen(
         items(pagedPhotos) { photoEntity ->
             photoEntity?.let {
                 PhotoItemCard(
-                    photoItem = it, itemWidth,
+                    photoItem = it,
                     onLikeClick = { isLiked, photoId -> viewModel.onLikeClick(isLiked, photoId) },
                     onPhotoClick = onPhotoClick,
-                    likeChangingState = likeChangingState
                 )
             }
         }

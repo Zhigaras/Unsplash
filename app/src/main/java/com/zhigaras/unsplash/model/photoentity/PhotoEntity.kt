@@ -18,6 +18,7 @@ data class PhotoEntity @JvmOverloads constructor(
     @Json(name = "downloads") val downloads: Int?,
     @Json(name = "liked_by_user") val likedByUser: Boolean,
     @Json(name = "likes") val likes: Int,
+    @Json(name = "color") val color: String,
     @Embedded
     @Json(name = "urls") val urls: Urls,
     @Embedded

@@ -22,8 +22,10 @@ abstract class BaseRemoteRepo(
             
             if (response.isSuccessful) {
                 ApiResult.Success(_data = response.body())
+            } else if (response.code() == 403) {
+                ApiResult.Error(exception = "Rate Limit Exceeded")
             } else {
-                ApiResult.Error(exception = response.message())
+                ApiResult.Error(exception = "Check your internet connection")
             }
         }
 //            } catch (e: HttpException) {

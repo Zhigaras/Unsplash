@@ -7,11 +7,11 @@ import androidx.paging.cachedIn
 import com.zhigaras.unsplash.data.MainRepository
 import com.zhigaras.unsplash.data.remote.ApiResult
 import com.zhigaras.unsplash.di.IoDispatcher
-import com.zhigaras.unsplash.model.LikeResponseModel
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,30 +23,39 @@ class MainViewModel @Inject constructor(
     
     val pagedPhotos = mainRepository.loadPhotos().cachedIn(viewModelScope)
     
-//    private val _photoDetailsFlow = MutableStateFlow<ApiResult<PhotoEntity>>(ApiResult.Loading())
-//    val photoDetailsFlow get() = _photoDetailsFlow.asStateFlow()
+    private val _photoDetailsFlow = MutableStateFlow<ApiResult<PhotoEntity>>(ApiResult.Loading())
+    val photoDetailsFlow get() = _photoDetailsFlow.asStateFlow()
     
-    private val _likeChangingFlow = MutableStateFlow<ApiResult<LikeResponseModel>>(ApiResult.NotLoadedYet())
-    val likeChangingFlow get() = _likeChangingFlow.asStateFlow()
+//    private val _likeChangingFlow = MutableStateFlow<ApiResult<LikeResponseModel>>(ApiResult.NotLoadedYet())
+//    val likeChangingFlow get() = _likeChangingFlow.asStateFlow()
     
-    fun getPhotoDetail(photoId: String): Flow<ApiResult<PhotoEntity>> {
-        val photoFlow = flow<ApiResult<PhotoEntity>> {
-            emit(ApiResult.Loading())
-            emitAll(mainRepository.getPhotoDetails(photoId))
+    fun getPhotoDetails(photoId: String) {
+        viewModelScope.launch {
+            _photoDetailsFlow.value = ApiResult.Loading()
+            val result = mainRepository.getPhotoDetails(photoId)
+            _photoDetailsFlow.value = result
+            
         }
-        return photoFlow
     }
+    
+//    fun getPhotoDetail(photoId: String): Flow<ApiResult<PhotoEntity>> {
+//        val photoFlow = flow<ApiResult<PhotoEntity>> {
+//            emit(ApiResult.Loading())
+//            emit(mainRepository.getPhotoDetails(photoId))
+//        }
+//        return photoFlow
+//    }
     
     fun onLikeClick(isLiked: Boolean, photoId: String) {
         Log.d("AAA", "clicked")
-        _likeChangingFlow.value = ApiResult.Loading()
+//        _likeChangingFlow.value = ApiResult.Loading()
         viewModelScope.launch {
             val result =
                 if (isLiked) mainRepository.removeFromFavorites(photoId)
                 else mainRepository.addToFavorites(photoId)
             result.data?.photo?.let { mainRepository.updatePhotoItem(it) }
             Log.d("AAA result", result.toString())
-            _likeChangingFlow.value = result
+//            _likeChangingFlow.value = result
         }
     }
 }
