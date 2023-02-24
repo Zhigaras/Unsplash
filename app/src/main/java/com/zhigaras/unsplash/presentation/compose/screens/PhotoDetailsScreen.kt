@@ -32,7 +32,7 @@ import com.zhigaras.unsplash.presentation.compose.LoadingView
 import com.zhigaras.unsplash.presentation.compose.screens.feedscreen.PhotoItemCard
 
 @Composable
-fun DetailsScreen(
+fun PhotoDetailsScreen(
     photoId: String,
     viewModel: MainViewModel = hiltViewModel(),
     onDownloadClick: (String, String) -> Unit

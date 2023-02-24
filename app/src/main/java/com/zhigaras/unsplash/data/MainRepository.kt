@@ -12,9 +12,11 @@ import com.zhigaras.unsplash.data.paging.UnsplashRemoteMediator
 import com.zhigaras.unsplash.data.remote.*
 import com.zhigaras.unsplash.di.IoDispatcher
 import com.zhigaras.unsplash.model.LikeResponseModel
+import com.zhigaras.unsplash.model.collectionentity.CollectionEntity
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(
@@ -24,7 +26,7 @@ class MainRepository @Inject constructor(
     private val unsplashApi: UnsplashApi,
     private val remoteKeysDao: RemoteKeysDao,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
-): BaseRemoteRepo(ioDispatcher = ioDispatcher) {
+) : BaseRemoteRepo(ioDispatcher = ioDispatcher) {
     
     suspend fun saveAccessToken(token: String) {
         dataStoreManager.saveToken(token)
@@ -60,22 +62,7 @@ class MainRepository @Inject constructor(
     }
     
     @OptIn(ExperimentalPagingApi::class)
-    fun loadFeedPhotos(): Flow<PagingData<PhotoEntity>> {
-        return Pager(
-            config = PagingConfig(UnsplashRemoteMediator.PAGE_SIZE),
-            remoteMediator = UnsplashRemoteMediator(
-                unsplashApi = unsplashApi,
-                cachedPhotoDatabase = cachedPhotoDatabase,
-                cachedPhotoDao = cachedPhotoDao,
-                remoteKeysDao = remoteKeysDao,
-                query = null
-                ),
-            pagingSourceFactory = { cachedPhotoDao.showAll() }
-        ).flow
-    }
-    
-    @OptIn(ExperimentalPagingApi::class)
-    fun loadSearchPhotos(query: String): Flow<PagingData<PhotoEntity>> {
+    fun loadPhotos(query: String? = null): Flow<PagingData<PhotoEntity>> {
         return Pager(
             config = PagingConfig(UnsplashRemoteMediator.PAGE_SIZE),
             remoteMediator = UnsplashRemoteMediator(
@@ -89,4 +76,7 @@ class MainRepository @Inject constructor(
         ).flow
     }
     
+    suspend fun loadCollections(page: Int, perPage: Int): Response<List<CollectionEntity>> {
+        return unsplashApi.loadCollections(page, perPage)
+    }
 }

@@ -34,20 +34,20 @@ fun SetupNavHost(
         composable(route = Feed.route) {
             FeedScreen(
                 onPhotoClick = { photoId ->
-                    navController.navigateSingleTopTo("${Details.route}/$photoId")
+                    navController.navigateSingleTopTo("${PhotoDetails.route}/$photoId")
                 }
             )
         }
         
         composable(
-            route = Details.routeWithArgs,
-            arguments = Details.arguments,
+            route = PhotoDetails.routeWithArgs,
+            arguments = PhotoDetails.arguments,
             deepLinks = listOf(navDeepLink {
                 uriPattern = "https://unsplash.com/photos/{photo_id}"
             })
         ) { navBackStackEntry ->
-            val photoId = navBackStackEntry.arguments?.getString(Details.photoIdArg) ?: ""
-            DetailsScreen(
+            val photoId = navBackStackEntry.arguments?.getString(PhotoDetails.photoIdArg) ?: ""
+            PhotoDetailsScreen(
                 photoId = photoId,
                 onDownloadClick = onDownloadClick
             )
@@ -60,7 +60,7 @@ fun SetupNavHost(
             SearchScreen(
                 query = query,
                 onPhotoClick = { photoId ->
-                    navController.navigateSingleTopTo("${Details.route}/$photoId")
+                    navController.navigateSingleTopTo("${PhotoDetails.route}/$photoId")
                 }
             )
             
@@ -70,8 +70,20 @@ fun SetupNavHost(
                 toAuthorizeScreen()
             }
         }
-        composable(route = Favorites.route) {
-            FavoritesScreen()
+        composable(route = Collections.route) {
+            CollectionScreen(
+                onCollectionClick = { collectionId ->
+                    navController.navigate("${CollectionDetails.route}/$collectionId")
+                }
+            )
+        }
+        composable(
+            route = CollectionDetails.routeWithArgs,
+            arguments = CollectionDetails.arguments
+        ) { navBackStackEntry ->
+            val collectionId =
+                navBackStackEntry.arguments?.getString(CollectionDetails.collectionIdArg) ?: ""
+            CollectionDetailsScreen(collectionId = collectionId)
         }
         composable(route = Profile.route) {
             ProfileScreen()

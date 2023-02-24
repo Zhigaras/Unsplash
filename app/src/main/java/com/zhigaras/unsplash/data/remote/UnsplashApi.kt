@@ -2,6 +2,7 @@ package com.zhigaras.unsplash.data.remote
 
 import com.zhigaras.unsplash.model.LikeResponseModel
 import com.zhigaras.unsplash.model.SearchResponseModel
+import com.zhigaras.unsplash.model.collectionentity.CollectionEntity
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import retrofit2.Response
 import retrofit2.http.DELETE
@@ -43,4 +44,17 @@ interface UnsplashApi {
     suspend fun removeFromFavorite(
         @Path("id") photoId: String
     ): Response<LikeResponseModel>
+    
+    @GET("collections")
+    suspend fun loadCollections(
+        @Query("page") page: Int,
+        @Query("per_page") perPage: Int
+    ): Response<List<CollectionEntity>>
+    
+    @GET("collections/{id}/photos")
+    suspend fun getCollectionDetails(
+        @Path("id") collectionId: String,
+        @Query("page") page: Int,
+        @Query("per_page") perPage: Int
+    ): Response<List<PhotoEntity>>
 }

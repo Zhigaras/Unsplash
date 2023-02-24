@@ -21,8 +21,11 @@
     <string name="about">"About "</string>
     <string name="no_internet_connection">No internet connection. Refresh the page.</string>
     <string name="feed">Feed</string>
-    <string name="favorites">Favorites</string>
+    <string name="collections">Collections</string>
     <string name="profile">Profile</string>
     <string name="photo">Photo</string>
     <string name="search_string">Search</string>
+    <string name="cover_photo">cover photo</string>
+    <string name="photos">%1$s photos</string>
+    <string name="collection_details">Collection</string>
 </resources>

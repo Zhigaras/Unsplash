@@ -1,11 +1,12 @@
 package com.zhigaras.unsplash.presentation.compose.navigation
 
+import androidx.annotation.StringRes
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.zhigaras.unsplash.R
 
 interface Destinations {
-    val title: Int?
+    @get:StringRes val title: Int?
     val route: String
         get() = this::class.java.simpleName
     val icon: Int?
@@ -24,8 +25,8 @@ object Feed : Destinations {
     override val pageNumber = 1
 }
 
-object Favorites : Destinations {
-    override val title = R.string.favorites
+object Collections : Destinations {
+    override val title = R.string.collections
     override val icon = R.drawable.favorites_icon
     override val pageNumber = 2
 }
@@ -36,7 +37,7 @@ object Profile : Destinations {
     override val pageNumber = 3
 }
 
-object Details : Destinations {
+object PhotoDetails : Destinations {
     override val title = R.string.photo
     override val icon = null
     override val pageNumber = 4
@@ -56,8 +57,18 @@ object Search : Destinations {
     val arguments = listOf(
         navArgument(queryArg) { type = NavType.StringType }
     )
-    
 }
 
-val allScreensList = listOf(Onboarding, Feed, Favorites, Profile, Details, Search)
-val bottomTabList = listOf(Feed, Favorites, Profile)
+object CollectionDetails : Destinations {
+    override val title = R.string.collection_details
+    override val icon = null
+    override val pageNumber = 6
+    const val collectionIdArg = "collection_id"
+    val routeWithArgs = "$route/{$collectionIdArg}"
+    val arguments = listOf(
+        navArgument(collectionIdArg) { type = NavType.StringType}
+    )
+}
+
+val allScreensList = listOf(Onboarding, Feed, Collections, Profile, PhotoDetails, Search, CollectionDetails)
+val bottomTabList = listOf(Feed, Collections, Profile)

@@ -10,9 +10,11 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import com.zhigaras.unsplash.presentation.compose.screens.feedscreen.PhotoItemCard
 import com.zhigaras.unsplash.presentation.compose.screens.feedscreen.items
@@ -58,7 +60,8 @@ fun LazyVerticalGrid(
                     val e = pagedPhotos.loadState.refresh as LoadState.Error
                     item {
                         ErrorItem(
-                            message = e.error.localizedMessage!!,
+                            message = e.error.localizedMessage
+                                ?: stringResource(id = R.string.something_went_wrong),
                             modifier = Modifier.fillMaxSize(),
                             onClickRetry = { retry() }
                         )
@@ -68,7 +71,8 @@ fun LazyVerticalGrid(
                     val e = pagedPhotos.loadState.append as LoadState.Error
                     item {
                         ErrorItem(
-                            message = e.error.localizedMessage!!,
+                            message = e.error.localizedMessage
+                                ?: stringResource(id = R.string.something_went_wrong),
                             onClickRetry = { retry() }
                         )
                     }

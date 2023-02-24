@@ -32,7 +32,7 @@ fun UnsplashTopBar(
     navigateToFeedScreen: () -> Unit
 ) {
     var isBackButtonVisible by remember { mutableStateOf(false) }
-    isBackButtonVisible = currentScreen == Details
+    isBackButtonVisible = currentScreen == PhotoDetails
     var isSearchActive by remember { mutableStateOf(false) }
     val textInputState = remember { mutableStateOf(TextFieldValue("")) }
     

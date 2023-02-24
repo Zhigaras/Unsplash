@@ -26,6 +26,7 @@ import com.zhigaras.unsplash.R
 import com.zhigaras.unsplash.data.remote.ApiStatus.*
 import com.zhigaras.unsplash.domain.toShortForm
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
+import com.zhigaras.unsplash.model.photoentity.User
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -67,7 +68,6 @@ fun PhotoItemCard(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun PhotoBottomInfo(
     modifier: Modifier,
@@ -81,32 +81,7 @@ fun PhotoBottomInfo(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            GlideImage(
-                model = user.profileImage.medium.toUri(),
-                contentDescription = stringResource(R.string.user_profile_image),
-                modifier = Modifier.padding(end = 4.dp)
-            ) {
-                it.circleCrop()
-                
-            }
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.SpaceEvenly) {
-                Text(
-                    text = user.fullName.toString(),
-                    maxLines = 1,
-                    style = MaterialTheme.typography.labelMedium,
-                    overflow = TextOverflow.Ellipsis
-                )
-                user.instagramUsernameCorrect.let {
-                    if (it.isNotBlank()) {
-                        Text(
-                            text = "@$it",
-                            maxLines = 1,
-                            style = MaterialTheme.typography.labelSmall,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-            }
+            UserInfoArea(user = photo.user, modifier = Modifier.weight(1f))
             LikesArea(
                 likes = likes,
                 _isLiked = likedByUser,
@@ -114,6 +89,43 @@ fun PhotoBottomInfo(
                 onLikeClick = onLikeClick,
                 photoId = id
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun UserInfoArea(
+    user: User,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        GlideImage(
+            model = user.profileImage.medium.toUri(),
+            contentDescription = stringResource(R.string.user_profile_image)
+        ) {
+            it.circleCrop()
+        }
+        Column(modifier = Modifier, verticalArrangement = Arrangement.SpaceEvenly) {
+            Text(
+                text = user.fullName.toString(),
+                maxLines = 1,
+                style = MaterialTheme.typography.labelMedium,
+                overflow = TextOverflow.Ellipsis
+            )
+            user.instagramUsernameCorrect.let {
+                if (it.isNotBlank()) {
+                    Text(
+                        text = "@$it",
+                        maxLines = 1,
+                        style = MaterialTheme.typography.labelSmall,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
         }
     }
 }
@@ -132,7 +144,7 @@ fun LikesArea(
         checked = _isLiked,
         onCheckedChange = { onLikeClick(_isLiked, photoId); Log.d("AAA", "1clicked") },
         modifier = Modifier
-            .padding(4.dp),
+            .padding(vertical = 4.dp),
         enabled = enabled
     ) {
         Icon(

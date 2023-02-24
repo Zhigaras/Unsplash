@@ -22,8 +22,11 @@
     <string name="about">"О "</string>
     <string name="no_internet_connection">Нет сети. Обновите страницу</string>
     <string name="feed">Лента</string>
-    <string name="favorites">Избранное</string>
+    <string name="collections">Коллекции</string>
     <string name="profile">Профиль</string>
     <string name="photo">Фото</string>
     <string name="search_string">Поиск</string>
+    <string name="cover_photo">фото обложки</string>
+    <string name="photos">%1$s фотографий</string>
+    <string name="collection_details">Коллекция</string>
 </resources>
