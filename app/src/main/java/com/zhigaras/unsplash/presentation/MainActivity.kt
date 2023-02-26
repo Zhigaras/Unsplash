@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -36,6 +37,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     
     private val authViewModel: AuthViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
     private var downloadId = 0L
     private lateinit var downloadManager: DownloadManager
     
@@ -105,6 +107,26 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                authViewModel.toastEventChannel.collect {
+                    Toast.makeText(
+                        applicationContext,
+                        applicationContext.getText(it),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.errorFlow.collect {
+                    Log.d("AAA", "error collected")
+                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        
         
         setContent {
             val snackBarHostState = remember { SnackbarHostState() }

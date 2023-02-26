@@ -13,8 +13,6 @@ import com.zhigaras.unsplash.domain.toSearchTagString
 data class PhotoEntity @JvmOverloads constructor(
     @PrimaryKey
     @Json(name = "id") val id: String,
-//    @Json(name = "current_user_collections")
-//    val currentUserCollections: List<String>,
     @Json(name = "downloads") val downloads: Int?,
     @Json(name = "liked_by_user") val likedByUser: Boolean,
     @Json(name = "likes") val likes: Int,
@@ -28,7 +26,7 @@ data class PhotoEntity @JvmOverloads constructor(
     @Embedded
     @Json(name = "user") val user: User,
     @Embedded
-    @Json(name = "links") val links: Links,
+    @Json(name = "links") val photo_links: PhotoLinks,
     @Json(name = "width") val width: Int,
     @Json(name = "height") val height: Int,
     @Json(name = "description") val description: String?,

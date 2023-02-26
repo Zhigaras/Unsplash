@@ -28,4 +28,7 @@
     <string name="cover_photo">cover photo</string>
     <string name="photos">%1$s photos</string>
     <string name="collection_details">Collection</string>
+    <string name="e_mail" translatable="false">E-mail</string>
+    <string name="liked_photo">%1$s photos liked</string>
+    <string name="rate_limit_exceeded">Rate Limit Exceeded</string>
 </resources>

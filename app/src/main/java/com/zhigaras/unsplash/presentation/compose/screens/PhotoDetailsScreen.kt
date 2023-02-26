@@ -3,6 +3,7 @@ package com.zhigaras.unsplash.presentation.compose.screens
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -39,6 +40,7 @@ fun PhotoDetailsScreen(
 ) {
     LaunchedEffect(key1 = Unit) {
         viewModel.getPhotoDetails(photoId)
+        Log.d("AAA launched effect", "start")
     }
     val photoDetails =
         viewModel.photoDetailsFlow.collectAsState(initial = ApiResult.Loading()).value
@@ -100,12 +102,16 @@ fun DetailsSet(
                 onLikeClick = onLikeClick,
                 needToShowShareButton = true,
                 
-            )
-            LocationBlock(
-                modifier.padding(horizontal = 4.dp),
-                photoDetails,
-                onLocationClick = { onLocationClick(it) }
-            )
+                )
+            photoDetails.location?.locationName?.let {
+                LocationBlock(
+                    modifier = modifier.padding(horizontal = 4.dp),
+                    latitude = photoDetails.location.position.latitude?: 0.0,
+                    longitude = photoDetails.location.position.longitude?: 0.0,
+                    locationName = it,
+                    onLocationClick = { onLocationClick(it) }
+                )
+            }
             TagsBlock(modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp), photoDetails)
             AboutBlock(modifier, photoDetails)
             DownloadBlock(
@@ -119,23 +125,21 @@ fun DetailsSet(
 
 @Composable
 fun LocationBlock(
-    modifier: Modifier,
-    photoDetails: PhotoEntity,
-    onLocationClick: (String) -> Unit
+    modifier: Modifier = Modifier,
+    latitude: Double = 0.0,
+    longitude: Double = 0.0,
+    locationName: String,
+    onLocationClick: (String) -> Unit = {}
 ) {
-    photoDetails.location?.locationName?.let {
-        val lat = photoDetails.location.position.latitude
-        val lon = photoDetails.location.position.longitude
-        Row(
-            modifier = modifier.clickable { onLocationClick("geo:$lat,$lon?z=14") },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(R.drawable.location_icon),
-                contentDescription = null
-            )
-            Text(text = it, modifier = modifier.horizontalScroll(ScrollState(0)))
-        }
+    Row(
+        modifier = modifier.clickable { onLocationClick("geo:$latitude,$longitude?z=14") },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(R.drawable.location_icon),
+            contentDescription = null
+        )
+        Text(text = locationName, modifier = modifier.horizontalScroll(ScrollState(0)))
     }
 }
 
@@ -222,9 +226,3 @@ fun DownloadBlock(
         )
     }
 }
-
-//@Preview
-//@Composable
-//fun LocationBlockPreview() {
-//    LocationBlock(modifier = Modifier, photoDetails = PhotoDetails())
-//}

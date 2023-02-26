@@ -4,6 +4,7 @@ import com.zhigaras.unsplash.model.LikeResponseModel
 import com.zhigaras.unsplash.model.SearchResponseModel
 import com.zhigaras.unsplash.model.collectionentity.CollectionEntity
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
+import com.zhigaras.unsplash.model.photoentity.User
 import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -54,6 +55,16 @@ interface UnsplashApi {
     @GET("collections/{id}/photos")
     suspend fun loadCollectionDetails(
         @Path("id") collectionId: String,
+        @Query("page") page: Int,
+        @Query("per_page") perPage: Int
+    ): Response<List<PhotoEntity>>
+    
+    @GET("me")
+    suspend fun getProfileInfo() : Response<User>
+    
+    @GET("/users/{username}/likes")
+    suspend fun getPhotosLikedByUser(
+        @Path("username") username: String,
         @Query("page") page: Int,
         @Query("per_page") perPage: Int
     ): Response<List<PhotoEntity>>

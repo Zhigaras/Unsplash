@@ -38,7 +38,6 @@ fun SetupNavHost(
                 }
             )
         }
-        
         composable(
             route = PhotoDetails.routeWithArgs,
             arguments = PhotoDetails.arguments,
@@ -91,7 +90,9 @@ fun SetupNavHost(
             )
         }
         composable(route = Profile.route) {
-            ProfileScreen()
+            ProfileScreen(onPhotoClick = { photoId ->
+                navController.navigate("${PhotoDetails.route}/$photoId")
+            })
         }
     }
 }

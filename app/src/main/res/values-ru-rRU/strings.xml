@@ -29,4 +29,6 @@
     <string name="cover_photo">фото обложки</string>
     <string name="photos">%1$s фотографий</string>
     <string name="collection_details">Коллекция</string>
+    <string name="liked_photo">%1$s фотографий понравилось</string>
+    <string name="rate_limit_exceeded">Достигнут лимит запросов</string>
 </resources>

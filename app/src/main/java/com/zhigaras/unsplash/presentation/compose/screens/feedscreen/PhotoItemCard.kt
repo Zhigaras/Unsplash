@@ -63,7 +63,7 @@ fun PhotoItemCard(
                     .align(Alignment.TopEnd)
                     .size(48.dp)
                     .padding(8.dp)
-                    .clickable { onShareClick(photoItem.links.html) })
+                    .clickable { onShareClick(photoItem.photo_links.html) })
         }
     }
 }

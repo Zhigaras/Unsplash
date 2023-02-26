@@ -37,9 +37,6 @@ class AuthViewModel @Inject constructor(
     private val _authSuccessEventChannel = Channel<Unit>()
     val authSuccessEventChannel get() = _authSuccessEventChannel.receiveAsFlow()
     
-    private val _loadingFlow = MutableStateFlow(false)
-    val ladingFlow get() = _loadingFlow.asStateFlow()
-    
     private val _toastEventChannel = Channel<Int>()
     val toastEventChannel get() = _toastEventChannel.receiveAsFlow()
     
@@ -72,19 +69,16 @@ class AuthViewModel @Inject constructor(
     }
     
     private suspend fun onAuthCodeReceived(tokenRequest: TokenRequest) {
-        _loadingFlow.value = true
         runCatching {
             AppAuth.performTokenRequestSuspend(
                 authService = authService,
                 tokenRequest = tokenRequest
             )
         }.onSuccess {
-            _loadingFlow.value = false
             mainRepository.saveAccessToken(it)
             Log.d("AAA token", it)
             _authSuccessEventChannel.send(Unit)
         }.onFailure {
-            _loadingFlow.value = false
             _toastEventChannel.send(R.string.auth_cancel)
         }
     }

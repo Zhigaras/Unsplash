@@ -1,6 +1,5 @@
 package com.zhigaras.unsplash.presentation.compose.screens
 
-import android.content.res.Resources
 import androidx.compose.animation.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -191,8 +190,6 @@ fun BackForwardButton(id: Int, onCLick: () -> Unit, tint: Color) {
 
 @Composable
 fun Circle(xOffset: Float) {
-    val displayWidth = Resources.getSystem().displayMetrics.widthPixels
-    val radius = (displayWidth).toFloat()
     
     Canvas(
         modifier = Modifier
@@ -204,15 +201,3 @@ fun Circle(xOffset: Float) {
         )
     }
 }
-
-//@Preview(showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-//@Composable
-//fun AuthPreviewNight() {
-//    AuthScreen()
-//}
-
-//@Preview(showSystemUi = true)
-//@Composable
-//fun AuthPreview() {
-//    AuthScreen()
-//}

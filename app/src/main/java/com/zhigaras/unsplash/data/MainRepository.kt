@@ -51,12 +51,12 @@ class MainRepository @Inject constructor(
         return dataTransformer.getPhotoDetails(photoId)
     }
     
-    suspend fun addToFavorites(photoId: String): ApiResult<LikeResponseModel> {
-        return dataTransformer.addToFavorites(photoId)
+    suspend fun addToFavorites(photoId: String): Response<LikeResponseModel> {
+        return unsplashApi.addToFavorites(photoId)
     }
     
-    suspend fun removeFromFavorites(photoId: String): ApiResult<LikeResponseModel> {
-        return dataTransformer.removeFromFavorites(photoId)
+    suspend fun removeFromFavorites(photoId: String): Response<LikeResponseModel> {
+        return unsplashApi.removeFromFavorite(photoId)
     }
     
     suspend fun updatePhotoItem(photoEntity: PhotoEntity) {
@@ -66,7 +66,8 @@ class MainRepository @Inject constructor(
     @OptIn(ExperimentalPagingApi::class)
     fun loadPhotos(
         query: String? = null,
-        collectionId: String? = null
+        collectionId: String? = null,
+        username: String?
     ): Flow<PagingData<PhotoEntity>> {
         return Pager(
             config = PagingConfig(UnsplashRemoteMediator.PAGE_SIZE),
@@ -74,9 +75,7 @@ class MainRepository @Inject constructor(
                 cachedPhotoDatabase = cachedPhotoDatabase,
                 cachedPhotoDao = cachedPhotoDao,
                 remoteKeysDao = remoteKeysDao,
-                query = query,
-                collectionId = collectionId,
-                apiRequest = getNeededCallback(query, collectionId)
+                apiRequest = getNeededCallback(query, collectionId, username)
             ),
             pagingSourceFactory = { cachedPhotoDao.showAll() }
         ).flow
@@ -84,23 +83,26 @@ class MainRepository @Inject constructor(
     
     private fun getNeededCallback(
         query: String? = null,
-        collectionId: String? = null
+        collectionId: String? = null,
+        username: String? = null
     ): suspend (String?, Int, Int) -> ApiResult<List<PhotoEntity>> {
-        if (query == null && collectionId == null) return { _, page, perPage ->
-            dataTransformer.getFeedPhotos(null, page, perPage)
-        }
-        
-        if (query != null && collectionId == null) return { _, page, perPage ->
+        if (query != null) return { _, page, perPage ->
             dataTransformer.getSearchPhotos(query, page, perPage)
         }
-        
-        if (collectionId != null && query == null) return { _, page, perPage ->
+        if (collectionId != null) return { _, page, perPage ->
             dataTransformer.getCollectionDetails(collectionId, page, perPage)
         }
-        else return { _, _, _ -> ApiResult.Error()}
+        if (username != null) return { _, page, perPage ->
+            dataTransformer.getPhotosLikedByUser(username, page, perPage)
+        }
+        else return { _, page, perPage ->
+            dataTransformer.getFeedPhotos(null, page, perPage)
+        }
     }
     
     suspend fun loadCollections(page: Int, perPage: Int): Response<List<CollectionEntity>> {
         return unsplashApi.loadCollections(page, perPage)
     }
+    
+    suspend fun getProfileInfo() = dataTransformer.getProfileInfo()
 }

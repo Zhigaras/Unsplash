@@ -141,11 +141,3 @@ fun TitleElement(
         )
     }
 }
-
-//@Preview
-//@Composable
-//fun TopBarPreview() {
-//    UnsplashTopBar(currentScreen = Profile) {
-//
-//    }
-//}

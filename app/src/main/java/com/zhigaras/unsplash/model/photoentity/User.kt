@@ -23,7 +23,12 @@ data class User @JvmOverloads constructor(
     @Json(name = "profile_image")
     val profileImage: ProfileImage,
     @Json(name = "username")
-    val username: String?,
+    val username: String,
+    @Embedded
+    @Json(name = "links")
+    val links: Links,
+    @Json(name = "total_likes")
+    val totalLikes: Int,
     var instagramUsernameCorrect: String =
         instagramUsername?.let {
             if (it.contains('/'))
