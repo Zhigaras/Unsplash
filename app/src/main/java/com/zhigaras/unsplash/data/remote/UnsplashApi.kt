@@ -52,7 +52,7 @@ interface UnsplashApi {
     ): Response<List<CollectionEntity>>
     
     @GET("collections/{id}/photos")
-    suspend fun getCollectionDetails(
+    suspend fun loadCollectionDetails(
         @Path("id") collectionId: String,
         @Query("page") page: Int,
         @Query("per_page") perPage: Int

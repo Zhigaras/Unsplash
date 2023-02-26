@@ -3,10 +3,7 @@ package com.zhigaras.unsplash.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
+import androidx.paging.*
 import com.zhigaras.unsplash.data.MainRepository
 import com.zhigaras.unsplash.data.paging.CollectionPagingSource
 import com.zhigaras.unsplash.data.remote.ApiResult
@@ -15,9 +12,7 @@ import com.zhigaras.unsplash.model.collectionentity.CollectionEntity
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +23,9 @@ class MainViewModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     
-    val pagedFeedPhotos = mainRepository.loadPhotos().cachedIn(viewModelScope)
+    private val _selectedCollectionFlow = MutableStateFlow<CollectionEntity?>(null)
+    val selectedCollectionFlow get() = _selectedCollectionFlow
+    
     val pagedCollections: Flow<PagingData<CollectionEntity>> = Pager(
         config = PagingConfig(CollectionPagingSource.PAGE_SIZE),
         pagingSourceFactory = { collectionPagingSource }
@@ -40,8 +37,11 @@ class MainViewModel @Inject constructor(
 //    private val _likeChangingFlow = MutableStateFlow<ApiResult<LikeResponseModel>>(ApiResult.NotLoadedYet())
 //    val likeChangingFlow get() = _likeChangingFlow.asStateFlow()
     
-    fun getPagedSearchPhotos(query: String): Flow<PagingData<PhotoEntity>> {
-        return mainRepository.loadPhotos(query)
+    fun getPagedPhotos(
+        query: String? = null,
+        collectionId: String? = null
+    ): Flow<PagingData<PhotoEntity>> {
+        return mainRepository.loadPhotos(query = query, collectionId = collectionId)
     }
     
     fun getPhotoDetails(photoId: String) {
@@ -52,14 +52,11 @@ class MainViewModel @Inject constructor(
             
         }
     }
-
-//    fun getPhotoDetail(photoId: String): Flow<ApiResult<PhotoEntity>> {
-//        val photoFlow = flow<ApiResult<PhotoEntity>> {
-//            emit(ApiResult.Loading())
-//            emit(mainRepository.getPhotoDetails(photoId))
-//        }
-//        return photoFlow
-//    }
+    
+    fun saveSelectedCollection(collection: CollectionEntity) {
+        Log.d("AAA collection saved", collection.collectionId)
+        _selectedCollectionFlow.value = collection
+    }
     
     fun onLikeClick(isLiked: Boolean, photoId: String) {
         Log.d("AAA", "clicked")

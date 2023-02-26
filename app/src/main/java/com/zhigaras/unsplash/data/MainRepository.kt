@@ -10,11 +10,9 @@ import com.zhigaras.unsplash.data.locale.db.CachedPhotoDatabase
 import com.zhigaras.unsplash.data.locale.db.RemoteKeysDao
 import com.zhigaras.unsplash.data.paging.UnsplashRemoteMediator
 import com.zhigaras.unsplash.data.remote.*
-import com.zhigaras.unsplash.di.IoDispatcher
 import com.zhigaras.unsplash.model.LikeResponseModel
 import com.zhigaras.unsplash.model.collectionentity.CollectionEntity
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
@@ -25,8 +23,8 @@ class MainRepository @Inject constructor(
     private val cachedPhotoDao: CachedPhotoDao,
     private val unsplashApi: UnsplashApi,
     private val remoteKeysDao: RemoteKeysDao,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
-) : BaseRemoteRepo(ioDispatcher = ioDispatcher) {
+    private val dataTransformer: DataTransformer
+) {
     
     suspend fun saveAccessToken(token: String) {
         dataStoreManager.saveToken(token)
@@ -34,6 +32,10 @@ class MainRepository @Inject constructor(
     
     suspend fun checkAuthToken(): AuthCheckResult<Boolean> {
         return AuthCheckResult.Result(dataStoreManager.checkToken())
+    }
+    
+    suspend fun getAccessToken(): String? {
+        return dataStoreManager.getToken()
     }
     
     suspend fun clearDataStore() {
@@ -46,15 +48,15 @@ class MainRepository @Inject constructor(
     }
     
     suspend fun getPhotoDetails(photoId: String): ApiResult<PhotoEntity> {
-        return safeApiCall { unsplashApi.getPhotoDetails(photoId) }
+        return dataTransformer.getPhotoDetails(photoId)
     }
     
     suspend fun addToFavorites(photoId: String): ApiResult<LikeResponseModel> {
-        return safeApiCall { unsplashApi.addToFavorites(photoId) }
+        return dataTransformer.addToFavorites(photoId)
     }
     
     suspend fun removeFromFavorites(photoId: String): ApiResult<LikeResponseModel> {
-        return safeApiCall { unsplashApi.removeFromFavorite(photoId) }
+        return dataTransformer.removeFromFavorites(photoId)
     }
     
     suspend fun updatePhotoItem(photoEntity: PhotoEntity) {
@@ -62,18 +64,40 @@ class MainRepository @Inject constructor(
     }
     
     @OptIn(ExperimentalPagingApi::class)
-    fun loadPhotos(query: String? = null): Flow<PagingData<PhotoEntity>> {
+    fun loadPhotos(
+        query: String? = null,
+        collectionId: String? = null
+    ): Flow<PagingData<PhotoEntity>> {
         return Pager(
             config = PagingConfig(UnsplashRemoteMediator.PAGE_SIZE),
             remoteMediator = UnsplashRemoteMediator(
-                unsplashApi = unsplashApi,
                 cachedPhotoDatabase = cachedPhotoDatabase,
                 cachedPhotoDao = cachedPhotoDao,
                 remoteKeysDao = remoteKeysDao,
-                query = query
+                query = query,
+                collectionId = collectionId,
+                apiRequest = getNeededCallback(query, collectionId)
             ),
             pagingSourceFactory = { cachedPhotoDao.showAll() }
         ).flow
+    }
+    
+    private fun getNeededCallback(
+        query: String? = null,
+        collectionId: String? = null
+    ): suspend (String?, Int, Int) -> ApiResult<List<PhotoEntity>> {
+        if (query == null && collectionId == null) return { _, page, perPage ->
+            dataTransformer.getFeedPhotos(null, page, perPage)
+        }
+        
+        if (query != null && collectionId == null) return { _, page, perPage ->
+            dataTransformer.getSearchPhotos(query, page, perPage)
+        }
+        
+        if (collectionId != null && query == null) return { _, page, perPage ->
+            dataTransformer.getCollectionDetails(collectionId, page, perPage)
+        }
+        else return { _, _, _ -> ApiResult.Error()}
     }
     
     suspend fun loadCollections(page: Int, perPage: Int): Response<List<CollectionEntity>> {

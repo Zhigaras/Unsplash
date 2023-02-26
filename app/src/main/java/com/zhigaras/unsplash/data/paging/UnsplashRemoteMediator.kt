@@ -3,7 +3,7 @@ package com.zhigaras.unsplash.data.paging
 import androidx.paging.*
 import androidx.room.withTransaction
 import com.zhigaras.unsplash.data.locale.db.*
-import com.zhigaras.unsplash.data.remote.UnsplashApi
+import com.zhigaras.unsplash.data.remote.ApiResult
 import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import retrofit2.HttpException
 import java.io.IOException
@@ -11,11 +11,12 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
 class UnsplashRemoteMediator @Inject constructor(
-    private val unsplashApi: UnsplashApi,
     private val cachedPhotoDatabase: CachedPhotoDatabase,
     private val cachedPhotoDao: CachedPhotoDao,
     private val remoteKeysDao: RemoteKeysDao,
-    private val query: String?
+    private val query: String?,
+    private val collectionId: String?,
+    private val apiRequest: suspend (String?, Int, Int) -> ApiResult<List<PhotoEntity>>,
 ) : RemoteMediator<Int, PhotoEntity>() {
     override suspend fun load(
         loadType: LoadType,
@@ -43,10 +44,10 @@ class UnsplashRemoteMediator @Inject constructor(
         }
         
         try {
-            val photos = if (query == null){
-                unsplashApi.loadFeedPhotos(page = page, perPage =  PAGE_SIZE).body()
-            } else {
-                unsplashApi.loadSearchPhoto(query = query, page = page, perPage = PAGE_SIZE).body()?.results
+            val photos = when {
+                query != null -> apiRequest(query, page, PAGE_SIZE).data
+                collectionId != null -> apiRequest(collectionId, page, PAGE_SIZE).data
+                else -> apiRequest(null, page, PAGE_SIZE).data
             }
             try {
                 checkNotNull(photos)

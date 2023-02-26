@@ -21,7 +21,7 @@ import com.zhigaras.unsplash.presentation.compose.screens.feedscreen.items
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LazyVerticalGrid(
+fun UnsplashLazyVerticalGrid(
     pagedPhotos: LazyPagingItems<PhotoEntity>,
     onLikeClick: (Boolean, String) -> Unit,
     onPhotoClick: (String) -> Unit

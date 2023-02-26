@@ -37,8 +37,8 @@ class AuthViewModel @Inject constructor(
     private val _authSuccessEventChannel = Channel<Unit>()
     val authSuccessEventChannel get() = _authSuccessEventChannel.receiveAsFlow()
     
-    private val _ladingFlow = MutableStateFlow(false)
-    val ladingFlow get() = _ladingFlow.asStateFlow()
+    private val _loadingFlow = MutableStateFlow(false)
+    val ladingFlow get() = _loadingFlow.asStateFlow()
     
     private val _toastEventChannel = Channel<Int>()
     val toastEventChannel get() = _toastEventChannel.receiveAsFlow()
@@ -72,19 +72,19 @@ class AuthViewModel @Inject constructor(
     }
     
     private suspend fun onAuthCodeReceived(tokenRequest: TokenRequest) {
-        _ladingFlow.value = true
+        _loadingFlow.value = true
         runCatching {
             AppAuth.performTokenRequestSuspend(
                 authService = authService,
                 tokenRequest = tokenRequest
             )
         }.onSuccess {
-            _ladingFlow.value = false
+            _loadingFlow.value = false
             mainRepository.saveAccessToken(it)
             Log.d("AAA token", it)
             _authSuccessEventChannel.send(Unit)
         }.onFailure {
-            _ladingFlow.value = false
+            _loadingFlow.value = false
             _toastEventChannel.send(R.string.auth_cancel)
         }
     }
@@ -102,10 +102,16 @@ class AuthViewModel @Inject constructor(
         }
     }
     
-    fun logOut() {
+    fun logOut(openLogoutPage: (Intent) -> Unit) {
         viewModelScope.launch(ioDispatcher) {
+            val endSessionRequest = AppAuth.getLogoutRequest(mainRepository.getAccessToken())
+            val customTabsIntent = CustomTabsIntent.Builder().build()
+            val endSessionIntent = authService.getEndSessionRequestIntent(
+                endSessionRequest, customTabsIntent
+            )
             mainRepository.clearDataStore()
             mainRepository.clearCachedPhotoDb()
+            openLogoutPage(endSessionIntent)
         }
     }
 }

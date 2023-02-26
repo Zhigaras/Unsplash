@@ -1,12 +1,7 @@
 package com.zhigaras.unsplash.data.remote
 
 import android.util.Log
-import com.zhigaras.unsplash.model.photoentity.PhotoEntity
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
@@ -14,7 +9,7 @@ abstract class BaseRemoteRepo(
     private val ioDispatcher: CoroutineDispatcher
 ) {
     
-    suspend fun <T> safeApiCall(apiToBeCalled: suspend () -> Response<T>): ApiResult<T> {
+    suspend fun <Data> safeApiCall(apiToBeCalled: suspend () -> Response<Data>): ApiResult<Data> {
         return withContext(ioDispatcher) {
 //            try {
             val response = apiToBeCalled()

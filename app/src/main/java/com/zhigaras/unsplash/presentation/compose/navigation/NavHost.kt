@@ -72,7 +72,7 @@ fun SetupNavHost(
         }
         composable(route = Collections.route) {
             CollectionScreen(
-                onCollectionClick = { collectionId ->
+                navigateToCollectionDetails = { collectionId ->
                     navController.navigate("${CollectionDetails.route}/$collectionId")
                 }
             )
@@ -83,7 +83,12 @@ fun SetupNavHost(
         ) { navBackStackEntry ->
             val collectionId =
                 navBackStackEntry.arguments?.getString(CollectionDetails.collectionIdArg) ?: ""
-            CollectionDetailsScreen(collectionId = collectionId)
+            CollectionDetailsScreen(
+                collectionId = collectionId,
+                onPhotoClick = { photoId ->
+                    navController.navigate("${PhotoDetails.route}/$photoId")
+                }
+            )
         }
         composable(route = Profile.route) {
             ProfileScreen()

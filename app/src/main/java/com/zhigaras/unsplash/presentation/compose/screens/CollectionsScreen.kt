@@ -1,6 +1,7 @@
 package com.zhigaras.unsplash.presentation.compose.screens
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,9 +29,14 @@ import com.zhigaras.unsplash.presentation.compose.screens.feedscreen.UserInfoAre
 @Composable
 fun CollectionScreen(
     viewModel: MainViewModel = hiltViewModel(),
-    onCollectionClick: (String) -> Unit
+    navigateToCollectionDetails: (String) -> Unit
 ) {
     val pagedCollections = viewModel.pagedCollections.collectAsLazyPagingItems()
+    fun onCollectionClick(collection: CollectionEntity) {
+        Log.d("AAA collection sent", collection.collectionId)
+        viewModel.saveSelectedCollection(collection)
+        navigateToCollectionDetails(collection.collectionId)
+    }
     
     LazyColumn(
         modifier = Modifier
@@ -38,7 +44,7 @@ fun CollectionScreen(
     ) {
         items(pagedCollections) { collection ->
             collection?.let {
-                CollectionItem(collection = it, onCollectionClick = onCollectionClick)
+                CollectionItem(collection = it, onCollectionClick = { onCollectionClick(it) })
             }
         }
         pagedCollections.apply {
@@ -79,9 +85,9 @@ fun CollectionScreen(
 @Composable
 fun CollectionItem(
     collection: CollectionEntity,
-    onCollectionClick: (String) -> Unit
+    onCollectionClick: (CollectionEntity) -> Unit
 ) {
-    Box(modifier = Modifier.clickable { onCollectionClick(collection.collectionId) }) {
+    Box(modifier = Modifier.clickable { onCollectionClick(collection) }) {
         with(collection) {
             GlideImage(
                 model = Uri.parse(this.coverPhoto.urls.regular),

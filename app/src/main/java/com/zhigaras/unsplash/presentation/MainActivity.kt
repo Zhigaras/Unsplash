@@ -1,6 +1,7 @@
 package com.zhigaras.unsplash.presentation
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DownloadManager
 import android.content.*
 import android.net.Uri
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -43,6 +45,17 @@ class MainActivity : ComponentActivity() {
             Log.d("AAA intentData", intentData.toString())
             authViewModel.handleAuthResponseIntent(intentData)
         }
+    private val logoutLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK)
+                Log.d("AAA logout", "OK")
+            else
+                Log.d("AAA logout", "NOT OK")
+        }
+    
+    private fun logout() {
+        authViewModel.logOut { logoutLauncher.launch(it) }
+    }
     
     private fun openAuthPage() {
         authViewModel.prepareAuthPageIntent { authorizeLauncher.launch(it) }
@@ -132,7 +145,8 @@ class MainActivity : ComponentActivity() {
                         },
                         snackBarHostState = snackBarHostState,
                         toAuthorizeScreen = { openAuthPage() },
-                        authViewModel = authViewModel
+                        authViewModel = authViewModel,
+                        logOut = { logout() }
                     )
                 }
             }
@@ -146,17 +160,24 @@ fun UnsplashApp(
     toAuthorizeScreen: () -> Unit,
     onDownloadClick: (String, String) -> Unit,
     snackBarHostState: SnackbarHostState,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    logOut: () -> Unit
 ) {
+    
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
     val currentScreen =
         allScreensList.find { currentDestination?.route?.contains(it.route) == true } ?: Feed
+    var topAndBottomBarState by rememberSaveable { (mutableStateOf(true)) }
+    topAndBottomBarState = when (currentBackStack?.destination?.route) {
+        Onboarding.route -> false
+        else -> true
+    }
     
-    fun logOut() {
-        authViewModel.logOut()
-        navController.navigate(Onboarding.route)
+    fun logOutAndNavigateToOnboarding() {
+        logOut()
+        navController.navigateSingleTopTo(Onboarding.route)
     }
     
     Scaffold(
@@ -164,12 +185,14 @@ fun UnsplashApp(
             UnsplashTopBar(
                 currentScreen = currentScreen,
                 onBackClick = { navController.popBackStack() },
-                onLogoutClick = { logOut() },
-                onStartSearchClick = {query ->
+                onLogoutClick = { logOutAndNavigateToOnboarding() },
+                onStartSearchClick = { query ->
                     navController.navigateSingleTopTo("${Search.route}/$query")
                 },
-                navigateToFeedScreen = { navController.navigate(Feed.route) }
+                navigateToFeedScreen = { navController.navigate(Feed.route) },
+                topAndBottomBarState = topAndBottomBarState
             )
+            
         },
         bottomBar = {
             BottomTabRow(
@@ -177,8 +200,10 @@ fun UnsplashApp(
                 onTabSelected = { newScreen ->
                     navController.navigateSingleTopTo(newScreen.route)
                 },
-                currentScreen = currentScreen
+                currentScreen = currentScreen,
+                topAndBottomBarState = topAndBottomBarState
             )
+            
         },
         snackbarHost = {
             SnackbarHost(hostState = snackBarHostState)

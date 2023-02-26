@@ -29,7 +29,8 @@ fun UnsplashTopBar(
     onBackClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
     onStartSearchClick: (String) -> Unit,
-    navigateToFeedScreen: () -> Unit
+    navigateToFeedScreen: () -> Unit,
+    topAndBottomBarState: Boolean
 ) {
     var isBackButtonVisible by remember { mutableStateOf(false) }
     isBackButtonVisible = currentScreen == PhotoDetails
@@ -43,64 +44,67 @@ fun UnsplashTopBar(
         }
         isSearchActive = !isSearchActive
     }
-    
-    TopAppBar(title = {
-        Row(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            AnimatedContent(
-                targetState = isSearchActive,
-                transitionSpec = {
-                    slideInVertically { -it } with slideOutVertically { it }
-                },
-                modifier = Modifier.weight(1f).animateContentSize()
+    AnimatedVisibility(visible = topAndBottomBarState) {
+        TopAppBar(title = {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                if (isSearchActive) {
-                    SearchElement(
-                        modifier = Modifier.weight(1f),
-                        textInputState = textInputState,
-                        onStartSearchClick = onStartSearchClick
-                    )
-                } else {
-                    TitleElement(
-                        modifier = Modifier.weight(1f),
-                        currentScreen = currentScreen,
-                    )
-                }
-            }
-            if (currentScreen == Feed || currentScreen == Search) {
-                IconToggleButton(
-                    modifier = Modifier.padding(8.dp),
-                    checked = isSearchActive,
-                    onCheckedChange = { onOpenCloseSearchClick() }) {
-                    Icon(
-                        imageVector = if (isSearchActive) Icons.Outlined.Close
-                        else Icons.Outlined.Search,
-                        contentDescription = null
-                    )
-                }
-            }
-            if (currentScreen == Profile) {
-                Icon(
-                    painterResource(id = R.drawable.logout_icon),
-                    null,
+                AnimatedContent(
+                    targetState = isSearchActive,
+                    transitionSpec = {
+                        slideInVertically { -it } with slideOutVertically { it }
+                    },
                     modifier = Modifier
-                        .size(40.dp)
-                        .padding(end = 16.dp)
-                        .clickable { onLogoutClick() })
+                        .weight(1f)
+                        .animateContentSize()
+                ) {
+                    if (isSearchActive) {
+                        SearchElement(
+                            modifier = Modifier.weight(1f),
+                            textInputState = textInputState,
+                            onStartSearchClick = onStartSearchClick
+                        )
+                    } else {
+                        TitleElement(
+                            modifier = Modifier.weight(1f),
+                            currentScreen = currentScreen,
+                        )
+                    }
+                }
+                if (currentScreen == Feed || currentScreen == Search) {
+                    IconToggleButton(
+                        modifier = Modifier.padding(8.dp),
+                        checked = isSearchActive,
+                        onCheckedChange = { onOpenCloseSearchClick() }) {
+                        Icon(
+                            imageVector = if (isSearchActive) Icons.Outlined.Close
+                            else Icons.Outlined.Search,
+                            contentDescription = null
+                        )
+                    }
+                }
+                if (currentScreen == Profile) {
+                    Icon(
+                        painterResource(id = R.drawable.logout_icon),
+                        null,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .padding(end = 16.dp)
+                            .clickable { onLogoutClick() })
+                }
             }
-        }
-    }, navigationIcon = {
-        AnimatedVisibility(visible = isBackButtonVisible,
-            enter = slideInHorizontally { -it },
-            exit = slideOutHorizontally { -it }) {
-            IconButton(onClick = { onBackClick() }) {
-                Icon(imageVector = Icons.Default.ArrowBack, null)
+        }, navigationIcon = {
+            AnimatedVisibility(visible = isBackButtonVisible,
+                enter = slideInHorizontally { -it },
+                exit = slideOutHorizontally { -it }) {
+                IconButton(onClick = { onBackClick() }) {
+                    Icon(imageVector = Icons.Default.ArrowBack, null)
+                }
             }
-        }
-    })
+        })
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

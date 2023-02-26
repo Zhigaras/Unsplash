@@ -1,5 +1,6 @@
 package com.zhigaras.unsplash.presentation.compose
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -24,42 +25,45 @@ import com.zhigaras.unsplash.presentation.compose.navigation.Destinations
 fun BottomTabRow(
     allScreens: List<Destinations>,
     onTabSelected: (Destinations) -> Unit,
-    currentScreen: Destinations
+    currentScreen: Destinations,
+    topAndBottomBarState: Boolean
 ) {
-    Surface(
-        Modifier
-            .height(72.dp)
-            .fillMaxWidth(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Row(
-            modifier = Modifier
-                .selectableGroup()
-                .border(width = 1.dp, color = Color.DarkGray)
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    AnimatedVisibility(visible = topAndBottomBarState) {
+        Surface(
+            Modifier
+                .height(72.dp)
+                .fillMaxWidth(),
+            color = MaterialTheme.colorScheme.background
         ) {
-            allScreens.forEach { screen ->
-                Icon(
-                    painter = painterResource(id = screen.icon!!),
-                    contentDescription = screen.route,
-                    tint = if (currentScreen == screen) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onTertiary,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .selectable(
-                            selected = currentScreen == screen,
-                            onClick = { onTabSelected(screen) },
-                            role = Role.Tab,
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = rememberRipple(
-                                bounded = false,
-                                radius = Dp.Unspecified,
-                                color = Color.Unspecified
+            Row(
+                modifier = Modifier
+                    .selectableGroup()
+                    .border(width = 1.dp, color = Color.DarkGray)
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                allScreens.forEach { screen ->
+                    Icon(
+                        painter = painterResource(id = screen.icon!!),
+                        contentDescription = screen.route,
+                        tint = if (currentScreen == screen) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onTertiary,
+                        modifier = Modifier
+                            .size(16.dp)
+                            .selectable(
+                                selected = currentScreen == screen,
+                                onClick = { onTabSelected(screen) },
+                                role = Role.Tab,
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = rememberRipple(
+                                    bounded = false,
+                                    radius = Dp.Unspecified,
+                                    color = Color.Unspecified
+                                )
                             )
-                        )
-                )
+                    )
+                }
             }
         }
     }

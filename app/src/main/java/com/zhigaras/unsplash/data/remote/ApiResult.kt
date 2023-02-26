@@ -10,13 +10,13 @@ enum class ApiStatus {
     NOT_LOADED_YET
 }
 
-sealed class ApiResult<out T>(
+sealed class ApiResult<out Data>(
     val status: ApiStatus,
-    val data: T?,
+    val data: Data?,
     val errorMessage: String?
 ) {
     
-    data class Success<out R>(val _data: R?) : ApiResult<R>(
+    data class Success<out Data>(val _data: Data?) : ApiResult<Data>(
         status = ApiStatus.SUCCESS,
         data = _data,
         errorMessage = null
@@ -31,13 +31,13 @@ sealed class ApiResult<out T>(
     )
     
     
-    class Loading<out R> : ApiResult<R>(
+    class Loading<out Data> : ApiResult<Data>(
         status = ApiStatus.LOADING,
         data = null,
         errorMessage = null
     )
     
-    class NotLoadedYet<out R> : ApiResult<R>(
+    class NotLoadedYet<out Data> : ApiResult<Data>(
         status = ApiStatus.NOT_LOADED_YET,
         data = null,
         errorMessage = null
